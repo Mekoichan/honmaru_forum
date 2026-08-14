@@ -93,8 +93,6 @@ a{color:inherit}.small{font-size:12px;color:var(--muted)}
 <div id="app"></div>
 <div id="overlay"></div>
 <div id="redVeil"></div><div id="darkVeil"></div><div id="bloodFlood"></div>
-<div id="app"></div>
-<div id="overlay"></div>
 <audio id="finalBgm" preload="auto" loop>
   <source src="final_bgm.mp3" type="audio/mpeg">
 </audio>
@@ -114,8 +112,6 @@ let currentPostFresh=false;
 let horrorScrollBound=false;
 let horrorBottomTimer=null;
 let dmBusy=false,dmSequenceToken=0;
-
-let finalBgmFadeTimer = null;
 
 let finalBgmFadeTimer = null;
 
@@ -385,6 +381,13 @@ function floor(uid,body,no,anon=false){
       </div>
     </div>
   </div>`;
+}
+function toggleFav(id){
+  let i=S.favorites.indexOf(id);
+  if(i>=0)S.favorites.splice(i,1);
+  else S.favorites.push(id);
+  save();
+  render();
 }
 function renderFavorites(){let ps=POSTS.filter(p=>S.favorites.includes(p.id)&&availablePosts().some(x=>x.id===p.id));return `<div class="pagehead"><h1>收藏</h1></div><div class="post-list">${ps.length?ps.map(postRow).join(""):`<div style="padding:36px;text-align:center;color:#999">暂无收藏</div>`}</div>`}
 function startMeltPost(){let root=document.getElementById("meltThread"),layer=document.getElementById("meltGhostLayer");if(!root||S.meltSeen)return;setTimeout(()=>root&&root.classList.add("melt1"),900);setTimeout(()=>{if(!root)return;root.classList.add("melt2");if(layer)layer.innerHTML="<span>无　异　常</span><span>■■:■■</span><span>主人</span><span>譁ｰ蜿門ｾ励＠縺ｾ縺励◆</span>"},2200);setTimeout(()=>{if(!root)return;root.classList.add("melt3");if(layer)layer.innerHTML="<span>主　人　主　人</span><span>縺薙％縺ｫ縺ｯ縺?↑縺?</span><span>夜　间　无　异　常</span><span>主人？</span><span>404　404　404</span><span>蜿ょｼ</span>"},3900);setTimeout(()=>{if(!root)return;root.classList.add("melt4");if(layer)layer.innerHTML+="<b>不　要　刷　新</b><b>主　人</b><b>■■■■■■</b>";S.meltSeen=true;save()},5600)}
@@ -817,7 +820,7 @@ function renderEnding(){let d={peace:["安息","账号归档完成。论坛在�
 function modal(title,body,closable=true){document.getElementById("overlay").innerHTML=`<div class="modal"><div class="modal-card"><h2>${title}</h2>${body}${closable?`<div class="btnrow"><button class="btn" onclick="closeModal()">关闭</button></div>`:""}</div></div>`}
 function closeModal(){document.getElementById("overlay").innerHTML=""}
 function resetAsk(){modal("退出账号",`<p>退出并清除当前浏览器中的论坛记录？</p><div class="btnrow"><button class="btn dark" onclick="closeModal();resetGame()">清除并退出</button></div>`,true)}
-function resetGame(){localStorage.removeItem("honmaru_forum_v7");S=clone(DEFAULT_STATE);view="home";currentPost=null;currentProfile=null;currentDM=null;searchTerm="";currentPostFresh=false;render()}
+function resetGame(){localStorage.removeItem("honmaru_forum_v7_dual_guidance");S=clone(DEFAULT_STATE);view="home";currentPost=null;currentProfile=null;currentDM=null;searchTerm="";currentPostFresh=false;render()}
 
 render();
 </script>
