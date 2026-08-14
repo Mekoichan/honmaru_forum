@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>本丸论坛</title>
+<style>
+:root{
+  --bg:#f1efe9;--paper:#fffdf8;--ink:#282522;--muted:#7e7870;--line:#d9d3c9;
+  --wine:#5c2830;--soft:#f3eee7;--shadow:0 8px 28px rgba(42,34,29,.07);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:"Noto Serif SC","Songti SC","Yu Mincho",serif}
+button,input,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+a{color:inherit}.small{font-size:12px;color:var(--muted)}
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;min-height:62px;padding:10px 22px;background:#24211e;color:#f6f0e6;border-bottom:1px solid #141210}
+.brand{font-weight:800;letter-spacing:.15em;white-space:nowrap}.brand small{margin-left:8px;font-weight:400;letter-spacing:.05em;color:#aaa29a}
+.search{position:relative;flex:1;max-width:660px}.search input{width:100%;padding:9px 12px;border:1px solid #4b4641;border-radius:4px;outline:0;background:#35312e;color:#fff}.search input:focus{border-color:#92877c}
+.account-mini{display:flex;align-items:center;gap:8px;font-size:13px;white-space:nowrap}.online-dot{width:7px;height:7px;border-radius:50%;background:#86a27c}
+.layout{display:grid;grid-template-columns:210px minmax(0,1fr) 250px;gap:15px;max-width:1380px;margin:16px auto;padding:0 15px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow)}
+.sidebar,.online-panel{position:sticky;top:78px;align-self:start;padding:12px}.mebox{padding:8px 4px 14px;border-bottom:1px solid var(--line);margin-bottom:8px}.row{display:flex;align-items:center;gap:10px}
+.avatar{width:42px;height:42px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;background:#ddd7cd;border:1px solid #c9c1b7;font-weight:700;overflow:hidden}.avatar.sm{width:30px;height:30px;font-size:11px}.avatar.hasebe{background:#37332f;color:#eee;border-color:#292622}
+.nav{width:100%;border:0;background:transparent;text-align:left;padding:10px;border-radius:4px;color:var(--ink);display:flex;align-items:center;justify-content:space-between}.nav:hover,.nav.active{background:#eee9e2;color:var(--wine)}
+.badge{font-size:10px;background:var(--wine);color:#fff;border-radius:999px;padding:2px 6px}
+.main{min-height:76vh}.pagehead{display:flex;align-items:center;justify-content:space-between;padding:17px 19px;border-bottom:1px solid var(--line);gap:14px}.pagehead h1{font-size:19px;margin:0;letter-spacing:.05em}.filters{display:flex;gap:7px;flex-wrap:wrap}.filter{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:4px 8px;background:#fff}
+.post-list{padding:0 13px}.post-row{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:11px;padding:15px 7px;border-bottom:1px solid #e8e2d9}.post-row:last-child{border-bottom:0}.post-row:hover .post-title{color:var(--wine)}.post-title{font-weight:700;line-height:1.5;cursor:pointer}.post-meta{font-size:11px;color:var(--muted);margin-top:4px}.board{font-size:10px;color:#756e67;border:1px solid #d8d0c6;padding:3px 6px;border-radius:3px;white-space:nowrap}.newmark{font-size:9px;color:#8a363e;margin-left:7px}
+.online-panel h3{font-size:14px;margin:2px 0 9px}.online-user{display:flex;align-items:center;gap:9px;padding:8px 3px;border-bottom:1px dashed #e4ddd4;cursor:pointer}.online-user:hover{background:#f5f1ea}.dot{width:7px;height:7px;border-radius:50%;background:#88a17e}.dot.odd{box-shadow:0 0 7px rgba(130,34,46,.55);background:#87343e}.count{font-size:11px;color:var(--muted)}
+.back{border:0;background:transparent;color:var(--wine);padding:12px 0}.post-view{padding:0 18px 22px}.thread-title{font-size:22px;margin:5px 0}.thread-sub{font-size:11px;color:var(--muted);padding-bottom:13px;border-bottom:1px solid var(--line)}
+.floor{display:grid;grid-template-columns:112px minmax(0,1fr);border-bottom:1px solid #e7e1d8;min-height:112px}.floor-user{background:#faf7f2;border-right:1px solid #e8e1d8;padding:16px 10px;text-align:center;cursor:pointer}.floor-user .avatar{margin:0 auto 6px}.floor-body{position:relative;padding:17px 20px;line-height:1.85}.floor-no{position:absolute;right:9px;top:8px;font-size:10px;color:#aaa}.floor-actions{font-size:11px;color:#8c8279;margin-top:12px}.floor-actions button{border:0;background:transparent;color:#76565a;padding:0 12px 0 0}
+.profile{padding:20px}.profile-head{display:flex;align-items:center;gap:14px;padding-bottom:17px;border-bottom:1px solid var(--line)}.profile-head .avatar{width:64px;height:64px;font-size:19px}.profile-name{font-size:22px;font-weight:800}.profile-actions{margin-left:auto}.btn{border:1px solid var(--wine);border-radius:3px;padding:8px 13px;background:#fff;color:var(--wine)}.btn.primary{background:var(--wine);color:#fff}.btn.dark{background:#24211e;color:#fff;border-color:#24211e}.btn:disabled{opacity:.4;cursor:default}.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.space-tabs{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--line);font-size:12px}.space-tabs b{color:var(--wine)}.space-entry{padding:15px 3px;border-bottom:1px solid #e7e1d9;line-height:1.8}.entry-date{font-size:10px;color:#999;margin-bottom:3px}
+.lock-screen{min-height:620px;display:grid;place-items:center;padding:24px}.lock-card{width:min(500px,100%);text-align:center;border:1px solid #cfc6bc;background:#f8f4ed;padding:28px}.lock-icon{font-size:34px;margin-bottom:10px}.field{text-align:left;margin:12px 0}.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.field input,.field textarea{width:100%;padding:10px;border:1px solid #cfc7bd;background:#fff;border-radius:3px;outline:0}.field input:focus,.field textarea:focus{border-color:#866a6c}.inline-error{min-height:18px;color:#8d2731;font-size:11px;margin-top:6px}
+.messages{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:690px}.dm-list{border-right:1px solid var(--line);background:#faf8f4}.dm-row{padding:13px;border-bottom:1px solid #e5dfd7;cursor:pointer}.dm-row:hover,.dm-row.active{background:#eee9e2}.dm-name{font-weight:700;font-size:13px}.dm-preview{font-size:10px;color:#8c857d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:4px}.chat{display:flex;flex-direction:column;min-width:0}.chat-head{display:flex;align-items:center;gap:9px;padding:12px 15px;border-bottom:1px solid var(--line);cursor:pointer}.chat-log{flex:1;min-height:480px;max-height:570px;overflow:auto;padding:17px;background:linear-gradient(#fffdfa,#fbf9f5)}.bubble-row{display:flex;align-items:flex-end;gap:7px;margin:8px 0}.bubble-row.me{justify-content:flex-end}.bubble{max-width:76%;border-radius:9px;padding:9px 11px;background:#eee9e1;line-height:1.65;font-size:13px;white-space:pre-wrap}.me .bubble{background:#5a3035;color:#fff}.sys{font-size:10px;color:#999;text-align:center;margin:10px}.typing{font-size:11px;color:#8a837a;padding:0 15px 7px;min-height:18px}.replies{display:flex;gap:7px;flex-wrap:wrap;padding:11px 13px;border-top:1px solid var(--line)}.replies button{border:1px solid #ccc3b9;background:#fff;border-radius:4px;padding:8px 10px;font-size:12px}.replies button:hover{border-color:var(--wine);color:var(--wine)}
+.search-results{padding:12px 15px}.result-section{font-size:11px;color:#817870;margin:6px 2px 10px}.user-result{display:flex;align-items:center;gap:10px;padding:11px 5px;border-bottom:1px solid #e7e1d9;cursor:pointer}.user-result:hover{background:#f7f3ed}
+.old-login{padding:24px;max-width:620px}.archive{padding:22px}.archive-card{padding:14px 16px;margin:17px 0;border-left:2px solid #8a7b6e;background:#faf7f2;line-height:1.85}.scheduled{font-size:10px;border:1px solid #aaa;color:#777;padding:2px 5px;margin-right:7px}.comment{margin-top:12px;padding:10px;background:#eee9e1;font-size:13px}
+.tool{min-height:690px;padding:22px;background:#111;color:#c9d0c8;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.tool .field input{background:#191919;border-color:#333;color:#ddd}.console{height:210px;overflow:auto;border:1px solid #2c2c2c;background:#080808;padding:10px;font-size:11px;line-height:1.55;color:#97a093;white-space:pre-wrap}.tool a{color:#b8c8b2}.post-inline-link{color:#1a66c9;text-decoration:underline;cursor:pointer;font-weight:600}.post-inline-link:hover{color:#0f4d9b}.black-stage{position:fixed;inset:0;z-index:160;background:#000;display:grid;place-items:center;color:#777;font-size:12px;letter-spacing:.18em}
+.modal{position:fixed;inset:0;z-index:100;background:rgba(20,18,17,.74);display:grid;place-items:center;padding:18px}.modal-card{width:min(610px,100%);background:var(--paper);border:1px solid #70645a;box-shadow:0 24px 80px rgba(0,0,0,.35);padding:23px;border-radius:5px}.modal-card h2{margin:0 0 10px}.modal-card p{line-height:1.75}
+.ending{min-height:100vh;display:grid;place-items:center;background:#000;color:#eee;padding:25px}.ending-inner{max-width:650px;text-align:center}.ending h1{font-weight:500;letter-spacing:.16em}.ending p{line-height:2;color:#c8c0b7}
+
+.ending-curtain{position:fixed;inset:0;z-index:320;background:#000;opacity:0;pointer-events:none;transition:opacity 2.8s ease}.ending-curtain.show{opacity:1}
+.typing.active::after{content:" 正在输入……";animation:typingPulse 1.1s infinite}@keyframes typingPulse{0%,100%{opacity:.35}50%{opacity:1}}
+/* 长谷部空间恐怖演出 */
+.horror-space{position:relative;min-height:4200px;background:#fffdf8;transition:background .15s,color .15s;isolation:isolate;overflow:hidden}.horror-space .profile-head{position:relative;z-index:3;padding:20px}.horror-feed{position:relative;z-index:3;max-width:820px;margin:0 auto;padding:0 18px 900px}.h-entry{position:relative;padding:18px 8px;border-bottom:1px solid #e8e1d8;line-height:1.85;transition:all .12s}.h-entry .entry-date{transition:color .12s}.h-entry.corrupt{min-height:150px}.h-entry.corrupt .corrupt-text{font-size:14px;opacity:.12;transition:opacity .15s,color .15s,text-shadow .15s,letter-spacing .15s}.h-entry.corrupt:nth-child(odd){transform:translateX(-1px)}
+#redVeil,#darkVeil,#bloodFlood{position:fixed;inset:0;pointer-events:none;z-index:70;display:none}#redVeil{background:#65000b;mix-blend-mode:multiply}#darkVeil{background:#050000}#bloodFlood{overflow:hidden;font-family:"Songti SC",serif}.blood-word{position:absolute;color:#9d0715;font-weight:900;white-space:nowrap;line-height:1;text-shadow:0 1px 0 #3a0006,0 0 8px rgba(140,0,15,.35);user-select:none}.blood-streak{position:fixed;top:-10vh;width:1px;height:120vh;background:linear-gradient(transparent,#73000c 20%,#3a0005 90%,transparent);opacity:.2;filter:blur(.4px)}
+.horror-space.terror1 .h-entry.corrupt .corrupt-text{opacity:.24;color:#704e4e}.horror-space.terror2 .h-entry.corrupt .corrupt-text{opacity:.55;color:#831522;text-shadow:0 0 1px #65101a}.horror-space.terror2 .h-entry.normal:nth-child(3n){opacity:.55}.horror-space.terror3 .h-entry.corrupt .corrupt-text{opacity:.9;color:#8f0917;letter-spacing:.08em;text-shadow:1px 0 #420007,-1px 0 #420007}.horror-space.terror3 .profile-name{color:#76000b}.horror-space.terror4 .h-entry{border-color:#3e050a}.horror-space.terror4 .h-entry.corrupt .corrupt-text{font-size:18px;color:#a00012;text-shadow:2px 1px #2b0004,-1px 0 #2b0004}.horror-space.terror4 .entry-date{color:#6d1720}.horror-space.terror4 .profile-head{filter:brightness(.75)}
+.horror-end{position:absolute;left:0;right:0;bottom:130px;z-index:4;text-align:center;padding:40px 18px;color:#9b0010;font-size:32px;font-weight:900;letter-spacing:.14em;text-shadow:2px 1px #220003}
+.horror-end small{display:block;margin-top:18px;font-size:11px;letter-spacing:.08em;color:#6f2d33}
+@keyframes microshake{0%{transform:translate(0)}25%{transform:translate(1px,-1px)}50%{transform:translate(-1px,1px)}75%{transform:translate(1px,1px)}100%{transform:translate(0)}}
+.terror-max .main{animation:microshake .09s steps(2,end) infinite}.terror-max .topbar{filter:brightness(.55) sepia(.3)}
+@media(max-width:980px){.layout{grid-template-columns:180px minmax(0,1fr)}.online-panel{display:none}}
+
+.thread-closed{margin:22px 0 6px;padding:13px 16px;border-top:1px solid #cfc7bc;border-bottom:1px solid #cfc7bc;background:#f0ede7;text-align:center;color:#777;font-size:12px;letter-spacing:.04em}
+.melt-thread{position:relative;overflow:hidden;min-height:720px;background:#fffefa;transition:background 1.3s ease,color 1.3s ease,filter 1.1s ease}.melt-thread .floor,.melt-thread .thread-title,.melt-thread .thread-sub{transform-origin:50% 0;transition:filter 1.2s ease,transform 1.2s ease,opacity 1.2s ease,color 1s ease}.melt-ghost-layer{position:absolute;inset:0;z-index:8;pointer-events:none;overflow:hidden;opacity:0;transition:opacity 1.1s ease;color:#4b3e40;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.melt-ghost-layer span,.melt-ghost-layer b{position:absolute;white-space:nowrap;animation:meltGlyph 1.1s infinite alternate ease-in-out}.melt-ghost-layer span:nth-child(1){left:8%;top:18%;font-size:24px}.melt-ghost-layer span:nth-child(2){right:7%;top:31%;font-size:16px}.melt-ghost-layer span:nth-child(3){left:35%;top:45%;font-size:32px}.melt-ghost-layer span:nth-child(4){left:4%;top:61%;font-size:19px}.melt-ghost-layer span:nth-child(5){right:12%;top:73%;font-size:26px}.melt-ghost-layer span:nth-child(6){left:22%;top:86%;font-size:15px}.melt-ghost-layer b:nth-last-child(3){left:4%;top:38%;font-size:46px}.melt-ghost-layer b:nth-last-child(2){right:-3%;top:56%;font-size:74px}.melt-ghost-layer b:nth-last-child(1){left:14%;top:78%;font-size:34px}.melt-thread.melt1 .floor:nth-of-type(2n){transform:skewX(.35deg) translateX(1px)}.melt-thread.melt1 .thread-title{letter-spacing:.035em;text-shadow:1px 0 #998}.melt-thread.melt2{background:#e8e4de;filter:saturate(.7)}.melt-thread.melt2 .melt-ghost-layer{opacity:.34}.melt-thread.melt2 .floor:nth-of-type(2n){filter:blur(.45px);transform:skewY(.6deg) translateY(3px)}.melt-thread.melt2 .floor:nth-of-type(3n){transform:skewY(-.8deg) scaleY(1.03)}.melt-thread.melt3{background:#77706d;color:#1e1718;filter:contrast(1.16) brightness(.72)}.melt-thread.melt3 .melt-ghost-layer{opacity:.75;color:#24070d}.melt-thread.melt3 .floor{border-color:#65595a}.melt-thread.melt3 .floor-body{animation:meltBody 1.45s infinite alternate ease-in-out;text-shadow:0 1px 1px rgba(70,0,9,.45)}.melt-thread.melt3 .thread-title{animation:meltTitle .34s infinite steps(2,end);color:#2d070d}.melt-thread.melt4{background:#1b1416;color:#a9878b;filter:contrast(1.42) brightness(.62)}.melt-thread.melt4 .melt-ghost-layer{opacity:1;color:#6f0716;text-shadow:2px 0 #170003,-2px 0 #170003}.melt-thread.melt4 .floor:nth-of-type(2n){transform:translateY(18px) skewY(1.4deg) scaleY(1.08);filter:blur(1px)}.melt-thread.melt4 .floor:nth-of-type(3n){transform:translateY(30px) skewY(-1.2deg) scaleY(1.16);filter:blur(1.4px)}
+@keyframes meltGlyph{0%{transform:translate(0,0) skewX(-2deg);filter:blur(.2px)}50%{transform:translate(4px,8px) skewX(8deg);filter:blur(1px)}100%{transform:translate(-3px,16px) skewX(-7deg);filter:blur(.35px)}}@keyframes meltBody{0%{transform:translateY(0) scaleY(1)}100%{transform:translateY(8px) scaleY(1.08)}}@keyframes meltTitle{0%{transform:translate(0);filter:blur(0)}33%{transform:translate(2px,-1px);filter:blur(.4px)}66%{transform:translate(-2px,1px);filter:blur(.8px)}100%{transform:translate(1px,2px);filter:blur(.2px)}}
+@media(max-width:720px){.topbar{position:sticky;padding:9px 11px;gap:9px;flex-wrap:wrap}.brand small{display:none}.search{order:3;flex-basis:100%;max-width:none}.layout{display:block;margin:7px auto;padding:0 7px}.sidebar{position:static;display:flex;gap:5px;overflow-x:auto;padding:7px;margin-bottom:7px}.mebox{display:none}.nav{width:auto;white-space:nowrap}.main{min-height:72vh}.post-row{grid-template-columns:38px minmax(0,1fr)}.board{display:none}.floor{grid-template-columns:76px minmax(0,1fr)}.floor-user{padding:14px 5px}.floor-body{padding:15px 12px}.messages{grid-template-columns:1fr}.dm-list{display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}.dm-row{min-width:155px}.chat-log{max-height:none;min-height:55vh}.profile-head{align-items:flex-start}.profile-actions{margin-left:0}.horror-space{min-height:5000px}.horror-feed{padding-left:11px;padding-right:11px;padding-bottom:1100px}.blood-word{font-weight:900}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="overlay"></div>
+<div id="redVeil"></div><div id="darkVeil"></div><div id="bloodFlood"></div>
+<div id="app"></div>
+<div id="overlay"></div>
+<audio id="finalBgm" preload="auto" loop>
+  <source src="final_bgm.mp3" type="audio/mpeg">
+</audio>
+<script>
+"use strict";
+
+const DEFAULT_STATE={
+ registered:false,nickname:"主人",birthday:"",intro:"",reads:[],favorites:[],viewCount:0,
+ duplicateVisible:false,currentHasebeDeleted:false,oldProfileUnlocked:false,horrorComplete:false,horrorRecovered:false,
+ askedSwords:[],identityChoice:null,hiddenHistoryOpen:false,oldIdFound:false,passwordLead:false,
+ talkRound:0,talkFailed:false,passwordKnown:false,legacyPassword:"",oldOwnerLoggedIn:false,truthKnown:false,
+ unread:{},dms:{},ending:null,treeChanged:false,toolOpened:false,usedActions:[],aoeHints:[],cleanupStep:0,talkUsedOptions:{},bannedPosts:[],mirrorPostPendingBan:false,mirrorPostSteps:0,meltSeen:false
+};
+let S=load();
+let view="home",currentPost=null,currentProfile=null,currentDM=null,searchTerm="";
+let currentPostFresh=false;
+let horrorScrollBound=false;
+let horrorBottomTimer=null;
+let dmBusy=false,dmSequenceToken=0;
+
+let finalBgmFadeTimer = null;
+
+function startFinalBgm(){
+  const audio = document.getElementById("finalBgm");
+  if(!audio) return;
+
+  if(finalBgmFadeTimer){
+    clearInterval(finalBgmFadeTimer);
+    finalBgmFadeTimer = null;
+  }
+
+  audio.volume = 0;
+  audio.currentTime = 0;
+
+  const playPromise = audio.play();
+
+  if(playPromise){
+    playPromise.catch(err=>{
+      console.log("BGM 播放失败：", err);
+    });
+  }
+
+  // 慢慢淡入
+  finalBgmFadeTimer = setInterval(()=>{
+    if(audio.volume < 0.32){
+      audio.volume = Math.min(0.32, audio.volume + 0.015);
+    }else{
+      clearInterval(finalBgmFadeTimer);
+      finalBgmFadeTimer = null;
+    }
+  },120);
+}
+
+function fadeOutFinalBgm(duration = 4500){
+  const audio = document.getElementById("finalBgm");
+  if(!audio || audio.paused) return;
+
+  if(finalBgmFadeTimer){
+    clearInterval(finalBgmFadeTimer);
+  }
+
+  const startVolume = audio.volume;
+  const steps = 40;
+  const stepTime = duration / steps;
+  let currentStep = 0;
+
+  finalBgmFadeTimer = setInterval(()=>{
+    currentStep++;
+
+    audio.volume = Math.max(
+      0,
+      startVolume * (1 - currentStep / steps)
+    );
+
+    if(currentStep >= steps){
+      clearInterval(finalBgmFadeTimer);
+      finalBgmFadeTimer = null;
+
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = startVolume;
+    }
+  },stepTime);
+}
+
+const USERS={
+ me:{id:"me",name:()=>S.nickname||"主人",avatar:()=>((S.nickname||"主")[0]),bio:"审神者",space:[]},
+ hasebe_here:{id:"hasebe_here",name:"へし切長谷部",avatar:"長",bio:"主命とあらば。",space:["主人今天精神比昨天好一些。药研说恢复得不错，但还是不能熬夜。","重新注册的论坛账号已经能正常用了。主人忘了密码这种小事交给我处理就好。","茶放凉了两次。第三次总算在温的时候喝完了。","晚饭只吃了一半。明天让歌仙换个清淡一点的做法。","夜里如果头疼就叫我。不要因为不想麻烦别人硬撑。"]},
+ hasebe_trace:{id:"hasebe_trace",name:"へし切長谷部",avatar:"長",bio:"",space:[]},
+ midare:{id:"midare",name:"乱藤四郎",avatar:"乱",bio:"今天也要可爱地出阵！",space:["新买的发饰到了！比照片上还可爱，明天戴给主人看。","主人今天看起来精神一点了。虽然只说了几句话，但至少没有一直皱眉。","厨房说草莓只剩一点，我先预定明天的甜点份额！","出阵服的袖口终于补好了，线的颜色居然完全看不出来。","晚上和五虎退一起给小老虎梳毛。结果我的衣服上全是毛。"]},
+ yagen:{id:"yagen",name:"药研藤四郎",avatar:"药",bio:"身体不舒服就来找我。",space:["药箱盘点完毕。缺的几样已经记在采购单上。","大将恢复期的药方不许谁擅自改，包括大将本人。","今天体温正常。睡眠时间还是不够，晚上得再盯一次。","手入室的纱布快用完了，明天让博多一起补库存。","提醒：药不是觉得自己好了就能停。看到这条的人自己对号入座。"]},
+ kasen:{id:"kasen",name:"歌仙兼定",avatar:"歌",bio:"风雅也是日常的一部分。",space:["庭里的桔梗开了。雨后颜色很好，可惜风有些凉。","今日的晚膳还算风雅。给主人那份做得淡一些，至少肯吃了几口。","晒好的书页已经收回去，湿气重的日子还是不适合整理旧册。","廊下那盆花被风吹歪了，幸好没有摔碎。","明早若天气好，换一只浅色花瓶。屋里总该有一点像样的季节感。"]},
+ tsuru:{id:"tsuru",name:"鹤丸国永",avatar:"鹤",bio:"人生需要惊吓。",space:["今天很安静。偶尔安静一点，也算一种意外吧。","屋顶上看见一片形状很奇怪的云，盯久了像只鹤。这个不算我自夸。","下午陪五虎退找小老虎，最后在被炉下面发现两只。","茶很好喝。青江说我难得坐着半个时辰没惹事——这评价也太过分了。","明天出阵名单没有我。看来可以光明正大地睡个懒觉。"]},
+ hakata:{id:"hakata",name:"博多藤四郎",avatar:"博",bio:"账一定要算清楚。",space:["小判对账中。今天总算一文不少。","今日采购支出已经录完，厨房那边比预计省了一点。","远征收益表重新做了格式，终于不用每次翻表。","最近论坛在线人数总有一点对不上。不是钱，但看着一样难受。","明天要去仓库核库存，谁借东西没登记最好今晚自己补上。"]},
+ sayo:{id:"sayo",name:"小夜左文字",avatar:"小",bio:"……",space:["柿子还没熟。","雨下了一整天。","檐下有一只鸟躲了很久。雨停以后才飞走。","今天没有出阵。刀擦过了。","晚上很安静。论坛比走廊吵。"]},
+ aoe:{id:"aoe",name:"笑面青江",avatar:"青",bio:"看不见的东西，也不代表不存在哦。",space:["茶叶换了一罐，意外地不错。","最近没什么特别的事。能慢慢喝茶其实很难得。","把以前写的小工具重新整理了一遍，名字还是取得很随便。","夜里的服务器偶尔会自己亮指示灯。嗯？也可能只是我没关。","月亮很好。适合散步，也适合遇到一些不该遇到的东西——开玩笑的。"]},
+ hori:{id:"hori",name:"堀川国广",avatar:"堀",bio:"有什么能帮忙的吗？",space:["整理旧资料。比想象中多很多。","今天把仓库目录重新抄了一份，缺页的地方先做了标记。","旧论坛有几条主题的时间戳对不上，已经另外记下来。","午后帮兼先生找了一会儿东西，最后发现就在他自己房里。","明天继续整理。希望不要再翻出旧系统里没归档的附件。"]},
+ aki:{id:"aki",name:"秋田藤四郎",avatar:"秋",bio:"外面有好多新鲜事。",space:["今天在旧仓库附近捡到东西，已经交给歌仙先生了。","后山的樱花开了一点点！明天如果不下雨还想再去看。","风很大，走廊上的纸差点全吹跑，幸好压住了。","主人如果身体好一点，也可以坐在廊下看外面，不用走很远。","小老虎今天追着落叶跑了好久，我在旁边看得都累了。"]},
+ kuri:{id:"kuri",name:"大俱利伽罗",avatar:"俱",bio:"我不打算和你们混熟。",space:["马当番换班。已经处理好了。","袖口缝好了，不需要别人帮。","今天的马很安静。","出阵准备完成。没有别的。","……别在这里留言问我晚饭吃什么。"]},
+ gokotai:{id:"gokotai",name:"五虎退",avatar:"五",bio:"请、请多关照……",space:["小老虎今天很有精神。刚刚才终于都睡着。","走廊的风铃晚上又响了，可是窗户真的没有开。","有一只把球滚到柜子下面，大家帮忙才拿出来。","主人今天摸了小老虎的头，它高兴了好久。","明天想把垫子拿出去晒一晒，希望不要下雨。"]},
+ yamanba:{id:"yamanba",name:"山姥切国广",avatar:"山",bio:"别一直盯着我看。",space:["整理论坛归档。旧主题比想象中乱。","被单洗了。没什么值得专门说的。","厨房的杯子被收走了，我找了半天。","有几条旧账号索引很奇怪。先记下来再说。","今天不想出门。这样也很好。"]},
+ nansen:{id:"nansen",name:"南泉一文字",avatar:"南",bio:"都说了不是猫。",space:["不是我打翻的。先说在前面。","窗边晒得到太阳，坐了一会儿而已。不是猫晒太阳。","厨房有人放了小鱼干。我只是顺路看了一眼，喵……啧。","旧归档里有张房间照片位置对不上，改天再找纸本核对。","今天没有抓任何东西。也没有挠门。"]},
+ shokudaikiri:{id:"shokudaikiri",name:"烛台切光忠",avatar:"烛",bio:"今天也要帅气地做好饭。",space:["晚饭准备好了。主人的那份单独做得清淡一些。","厨房库存补齐。鸡蛋和米都够到下一次采购。","明早做玉子烧，甜口和普通口味各一份。","夜里厨房已经锁门。想吃东西的等天亮再来。","新到的茶不错，下午可以和大家一起试试。"]},
+ admin:{id:"admin",name:"管理员",avatar:"管",bio:"论坛维护账号",space:["例行备份完成。","今日主题索引已更新。","已清理两条重复缓存记录。","茶水间板块权限检查完成。","历史附件恢复任务仍在运行。"]}
+};
+
+const POSTS=[
+{id:"P044",title:"如果有一天你发现“自己”已经回来了怎么办",author:"tsuru",board:"怪谈",when:"旧记录 · 05-12",body:"假设啊。<br><br>你出门远征三天。<br><br>回来的时候，却发现本丸里已经有一个“你”了。<br><br>他认识所有人。<br>所有人也认识他。<br><br>那你还进去吗？",replies:[["midare","什么嘛，好吓人！"],["hakata","先让他还我的钱。"],["kasen","这种怪谈毫无风雅。"],["hasebe_trace","如果主人认得我，我就进去。"]],requires:"afterDelete",closedText:"本主题因内容不适宜，已停止回复。"},
+{id:"P045",title:"【记录】近侍日志 / 无异常",author:"hasebe_trace",board:"旧帖",when:"旧记录 · 07-03",body:"主人今日状态稳定。午后有些困，晚饭前睡了一会儿。药已按时服用。夜间无异常。",replies:[["yagen","体温记录我收到了。今晚那次药别忘。"],["hasebe_trace","知道。"],["midare","主人今天终于肯吃一点甜的了？"],["hasebe_trace","只吃了一点。不能由着主人。"]],requires:"afterDelete",melt:true},
+{id:"P040",title:"【紧急记录】西侧结界遭到突袭时的联络帖",author:"hori",board:"旧帖",when:"归档记录 · 11-03 23:41",body:"西侧结界遭到时间溯行军突袭，现有联络术式不稳定。还能够读取论坛的人请只回复所在位置、伤员数量和能够行动的人数，不要在楼里反复询问主人位置。已派人前往确认。",replies:[["kasen","东侧回廊还能通行。轻伤两振，已经往手入室送。"],["yagen","手入室这边还收得到消息。重伤的先送，不要自己判断还能不能撑。"],["tsuru","北侧刚清完一批，但外面还有。别把门全开。"],["hori","仓库方向的联络断过一次，现在重新接上了。"],["hasebe_trace","主人在我这里。不要再派人过来。"],["yagen","收到。既然长谷部在主人那边，其余人按原分组行动。"],["sayo","西侧还有声音。"],["kasen","所有人注意，不要为了回帖停在原地。"]],requires:"history"},
+{id:"P041",title:"主人那边现在是谁守着？",author:"midare",board:"旧帖",when:"归档记录 · 11-03 23:53",body:"刚才有人说主人那边也被波及了，我这边过不去。谁离得近？至少回一句主人现在是不是安全。不要让我一直刷页面。",replies:[["hori","我刚从中庭过去，路被堵了。"],["yagen","主人之前有受伤，但具体情况我看不到。"],["hasebe_trace","我在。"],["midare","长谷部？主人呢？"],["hasebe_trace","还活着。"],["midare","……好。你别只回三个字啊。"],["tsuru","乱，先做你那边该做的。长谷部不会离开主人。"],["midare","我知道。就是因为知道才更担心。"]],requires:"history"},
+{id:"P042",title:"【袭击记录】还能行动的人报一下位置",author:"yagen",board:"旧帖",when:"归档记录 · 11-04 00:08",body:"时间溯行军第二次压进来以后，现实里的传讯已经乱了。论坛还能用就先拿这里顶一下。能行动的报位置，不能行动的让旁边的人代报。最重要的一条：不要单独去找大将，长谷部已经在大将身边。",replies:[["hakata","库房外，能动。小判先不管了。"],["gokotai","南廊，能、能动。小老虎也都在。"],["yamanba","中庭。还能战斗。"],["kasen","东侧，正往内侧撤。"],["sayo","西侧。"],["tsuru","北边。暂时还能撑。"],["yagen","收到。所有人别逞强。"],["admin","论坛可能随时断开。若有必须留下的信息，使用定时发布。"]],requires:"history"},
+{id:"P035",title:"厨房还有没有热水？我想泡点茶",author:"yamanba",board:"日常",when:"今天 23:16",body:"刚整理完一批旧归档，眼睛有点酸。厨房如果还有热水我就自己去，不用特意烧。顺便问一句，谁把我放在廊下的杯子挪走了。",replies:[["shokudaikiri","有，我刚换过一壶。杯子也在厨房，我怕晚上起风吹倒就先收进来了。"],["yamanba","……知道了。"],["tsuru","被单先生居然会主动发帖找杯子，真稀奇。"],["yamanba","闭嘴。"],["kasen","喝完早点休息。你今天盯屏幕太久了。"]]},
+{id:"P036",title:"有人明天早上想吃玉子烧吗",author:"shokudaikiri",board:"茶水间",when:"今天 23:02",body:"明早本来准备做清淡一点的早餐。鸡蛋数量还够，如果想吃玉子烧就在这里留一句。主人的那份会另外做，不放太重的调味。半夜看到帖子的也不要现在跑来厨房，我已经锁门了。",replies:[["midare","我要！甜一点的！"],["hakata","我也要，不过别太甜。"],["tsuru","半夜不能去厨房这句是在针对谁？"],["shokudaikiri","你觉得呢？"],["gokotai","我、我也想要一小份。"],["kasen","给主人配一点粥就好。"]]},
+{id:"P037",title:"小老虎把球滚进柜子底下了……",author:"gokotai",board:"日常",when:"今天 22:47",body:"最小的那只一直趴在柜子前面叫，可是柜子太重，我一个人不敢挪。球应该就在最里面。如果有人路过我的房间，可以帮忙抬一下吗？不用现在特意过来！",replies:[["yamanba","我过去。"],["gokotai","谢谢！真的不用很急。"],["midare","我也去！顺便看看小老虎。"],["kuri","两个人够了。别为了一个球把柜子掀了。"],["tsuru","如果柜子底下还有别的东西——"],["gokotai","鹤丸先生不要说了……"]]},
+{id:"P038",title:"借针线，深色的线最好",author:"kuri",board:"日常",when:"今天 22:29",body:"袖口开了一点。不需要谁帮我缝，只借针和深色线。放在哪里告诉我。",replies:[["kasen","我房里第二个抽屉。你自己拿。"],["kuri","知道了。"],["midare","真的不用我帮你吗？我缝得很快哦。"],["kuri","不用。"],["tsuru","要不要顺便绣只猫？"],["nansen","为什么又扯到猫，喵！"]]},
+{id:"P039",title:"明天出阵的便当要不要多准备一份",author:"hori",board:"日常",when:"今天 22:13",body:"名单刚改过一次，我怕厨房那边拿到的是旧版。明早出阵的人如果看到这帖，麻烦确认一下自己的名字。我已经把纸本送去烛台切那里了。",replies:[["shokudaikiri","收到了，我会按新版准备。"],["hakata","我的名字还在。"],["sayo","我也在。"],["hori","好，我再核一次。"],["tsuru","多一份也没关系嘛，回来当夜宵。"],["shokudaikiri","不行，数量还是要算准。"]]},
+{id:"P017",title:"为什么论坛在线人数总比列表里多1",author:"hakata",board:"求助",when:"今天 22:04",body:"又算了一遍。不是显示延迟，也不是我漏算了远征中的人。管理员账号、自动登录和挂着页面没关的我都排除了，前台数字还是比我能数到的人多一个。要是有人知道论坛计数规则，来给我讲讲。",replies:[["admin","前台计数来自会话，不完全等于可见账号。"],["sayo","不是多出来的。"]],requires:"afterHorror"},
+{id:"P013",autoBan:true,title:"在线人数是不是算错了",author:"hakata",board:"求助",when:"今天 21:31",body:"我把自动登录、远征账号、管理员账号都排除了。前台数字还是对不上。不是差很多，就差一个，所以更让人在意。",replies:[["admin","后台也存在一次无法归属的会话。正在查。"],["sayo","……"]],requires:"afterDelete"},
+{id:"P010",title:"【管理员】关于近期论坛缓存异常",author:"admin",board:"公告",when:"今天 21:24",body:"近期部分旧主题出现索引时间与页面显示不一致的情况。旧系统迁移后的部分历史主题仅保留月日与时刻，年份字段可能为空。暂未发现账号泄露，不影响正常发帖与私信。个别主题可能会临时封禁处理。若遇到显示异常，请不要连续刷新。<br><br><b>如遇异常，请及时向管理员反馈。</b>",replies:[["hakata","所以前台人数和列表人数不一样也算这个？"],["admin","不一定相关。先按正常论坛使用即可。"]],requires:"afterDelete"},
+{id:"P009",autoBan:true,title:"有人给旧帖子回复了",author:"midare",board:"杂谈",when:"今天 21:17",body:"我刚才真的看到旧帖最后多了一句东西，只有很短的一行。点回首页再进去就没了。我没有看错吧？我刚才还以为是谁在拿旧帖开玩笑，可刷新以后连那一行都没了。",replies:[["sayo","我也看到了。"],["midare","别吓我啊……"]],requires:"afterDelete"},
+{id:"P008",autoBan:true,title:"【求助】为什么旧帖子会显示刚刚有新回复",author:"hori",board:"求助",when:"今天 21:03",body:"整理旧资料时发现，一条旧系统主题在列表里显示“刚刚有回复”，点进去却找不到新增楼层。我清了缓存又试了一次，时间还是会变。这个问题目前只出现在同一个账号参与过的几条旧帖里。",replies:[["admin","请不要连续刷新，正在检查索引。"],["hori","明白。我先把主题地址整理出来。"]],requires:"afterDelete"},
+{id:"P012",autoBan:true,title:"长谷部这个账号以前是不是就有？",author:"yamanba",board:"杂谈",when:"今天 20:58",body:"今天整理论坛归档的时候看到很早以前的长谷部发言，点进现在的用户页又能对上同一个名字。我对论坛账号迁移不熟，这种情况是旧记录会自动挂到现在的账号下面吗？",replies:[["kasen","旧资料不要随便翻得太深。"],["hori","我也正好在整理，有些索引确实很奇怪。"]],requires:"afterDelete"},
+{id:"P016",title:"【失物】捡到一个碎掉的御守",author:"aki",board:"失物",when:"今天 20:46",body:"我在旧仓库外面的石阶旁捡到一个碎掉的御守。外袋已经裂开了，里面的纸也沾了灰，但是绳结看起来很像主人以前会系的样子。我没有继续拆，先用纸包起来了。有人知道应该交给谁吗？",replies:[["kasen","交给我。先不要再碰里面。"],["aki","好的，我马上送过去。"]],requires:"afterDelete"},
+{id:"P024",title:"今晚谁负责收内番衣服？",author:"gokotai",board:"日常",when:"今天 20:22",body:"晾衣架那边还有一批没有收，刚刚风变大了。我和小老虎可以去，但是被单太高够不到……如果有人正好经过，可以帮忙一起拿下来吗？",replies:[["yamanba","我去。"],["gokotai","谢谢山姥切先生！"]]},
+{id:"P023",title:"烛台切说今晚有茶泡饭",author:"midare",board:"茶水间",when:"今天 19:48",body:"给主人那份做得特别清淡，我们的可以自己加东西。先说好，梅干只剩最后一点，不许所有人一起冲过去抢。",replies:[["shokudaikiri","我已经另外留了一小碟，不用抢。"],["tsuru","那还有什么惊喜可言。"],["midare","你离厨房远一点。"]]},
+{id:"P022",title:"畑里的番茄到底是谁摘早了",author:"kasen",board:"当番",when:"今天 19:26",body:"今天检查畑当番记录时发现少了几个还没完全红的番茄。不是不能吃，而是至少应该等它们熟。若只是路过顺手摘了，现在承认还来得及，我不想明早对着所有人逐个问。",replies:[["hakata","不是我，我有采购记录证明。"],["tsuru","这听起来像一场很有趣的审问。"],["kuri","无聊。"]]},
+{id:"P011",title:"今天主人吃得很少",author:"kasen",board:"茶水间",when:"今天 19:06",body:"晚饭几乎没有动。药研说恢复期食欲不稳正常，但这几天都这样也不是办法。我明早打算做粥，再配一点不刺激胃的东西。谁知道主人最近有没有特别想吃的，可以在下面说。",replies:[["yagen","先别勉强。能吃多少算多少。"],["hasebe_here","我会陪主人用餐。"],["shokudaikiri","我晚点再准备一点容易入口的。"]]},
+{id:"P021",title:"谁把我的梳子拿去给小老虎梳毛了",author:"midare",board:"日常",when:"今天 18:55",body:"我不是不让用！可是至少用完要洗干净再放回来吧！现在上面全是毛！五虎退不用道歉，我知道肯定不是你主动拿的。",replies:[["gokotai","对、对不起……好像是最小的那只自己叼过去的。"],["midare","那就算了……它下次要梳毛直接来找我。"],["yagen","梳子洗干净就行。"]]},
+{id:"P001",title:"【厨房】谁又把冰箱里的布丁吃了",author:"midare",board:"茶水间",when:"今天 18:42",body:"我明明写了名字！而且还是两个布丁！今天训练回来一路都在想它们，结果打开冰箱只剩空盒。今晚之前主动承认的话，可以只罚帮我梳头，不然我就去查厨房门口是谁路过了。",replies:[["nansen","别看我，我今天根本没进厨房，喵。"],["midare","我又没说是你！"],["shokudaikiri","我明天再做一份。冰箱里的东西吃掉记得留张纸。"]]},
+{id:"P020",title:"明早有人要一起去看樱花吗",author:"aki",board:"日常",when:"今天 18:18",body:"后山那边今天已经开了一点！明早如果不下雨，我想早点去看看。主人要是身体允许的话也可以坐在廊下看，不用走很远。",replies:[["gokotai","我想去！"],["kasen","清晨风凉，主人若去要多披一件。"]]},
+{id:"P002",title:"明天马当番有人换班吗",author:"kuri",board:"当番",when:"今天 17:10",body:"临时有事。原本排的是明早马当番，有人能与我换到后日就说一声。别为了这个专门改自己的安排。",replies:[["kasen","我替你。后日你换我的畑当番。"],["kuri","可以。"]]},
+{id:"P003",title:"求推荐一个不会半夜响的风铃",author:"gokotai",board:"杂谈",when:"昨天 23:18",body:"走廊尽头那个风铃最近半夜会响，可是我检查过窗户，明明是关着的。昨天小老虎们也一起抬头看了很久。如果换成木头的会不会安静一点？",replies:[["midare","先换个地方挂试试看？"],["sayo","不是风的问题。"],["gokotai","小夜君不要这样说……"]]},
+{id:"P005",title:"【远征】小判今天怎么这么少",author:"hakata",board:"远征",when:"昨天 20:04",body:"我算了好几遍，回来的人数、报酬和消耗都能对上，唯独小判少了一截。远征队回来以后都来我这里再对一次账，谁也不许说“差不多就行”。",replies:[["yagen","先把出发前库存再核一次。"],["hakata","我正在核。就是因为都对得上才奇怪。"]]},
+{id:"P018",title:"【树洞】如果一个人已经忘记你了",author:"kasen",anon:true,board:"树洞",when:"旧记录 · 日期缺失",body:"如果一个人已经忘记你了，你还会继续等吗？不是说一定要等到他想起来。只是……如果你知道他还活着，却已经完全不记得你了。",replies:[["yagen","忘记也许是为了活下去。"],["hasebe_trace","只要主人平安，我记得就够了。"]],requires:"afterHorror"},
+{id:"P019",title:"【技术分享】关于本丸论坛异常用户的处理方式",author:"aoe",board:"技术",when:"较早 · 02-17",body:"之前处理缓存残留时顺手做了一个归档程序。它不是给普通账号用的，如果确认某个历史账号长期保持非正常在线，可以试试这个：<a class='post-inline-link' href='javascript:void(0)' onclick=\"openTool();event.stopPropagation();\">网页链接</a>。程序会要求验证用户身份、留存原因和管理员密码。别拿活人的账号试哦。",replies:[["admin","未经审核的程序不要挂论坛。"],["aoe","所以我才写“异常用户”嘛。要是看不明白三个验证项分别填什么，可以私信问我。"]],requires:"ghost",tool:true},
+{id:"P006",title:"鹤丸你把我的东西还回来",author:"hasebe_trace",board:"旧帖",when:"旧记录 · 04-21",body:"我最后说一次。主人的值班记录、备用钥匙和我抽屉里的便签都不是供你制造惊吓的道具。今天之内把东西原样放回去。尤其是备用钥匙，别再拿密码这件事开玩笑。",replies:[["tsuru","你连备用钥匙放哪都和主人生日有关，也太好猜了。"],["hasebe_trace","闭嘴。"],["tsuru","好好好，我还。"]]},
+{id:"P007",title:"谁知道长谷部保险箱密码",author:"tsuru",board:"旧帖",when:"旧记录 · 04-23",body:"纯粹好奇。那家伙每次输密码都挡得严严实实，越挡越让人在意。有人猜过吗？先声明，我只是问问，不一定会真的去试。",replies:[["midare","不会是“主人第一”吧？"],["yagen","别乱试，锁了他真会生气。"],["tsuru","提示嘛……他记某个日子，比记自己的事牢得多。"],["hasebe_trace","鹤丸国永。"]]},
+{id:"P004",title:"主人失忆以后我们说话是不是得注意点",author:"kasen",anon:true,board:"旧帖",when:"旧记录 · 日期缺失",body:"如题。有些事情是不是不应该现在就告诉主人？如果主人主动问到，又应该说到什么程度？",replies:[["yagen","先让大将的身体恢复。"],["kasen","别在论坛留下太具体的东西。"],["hasebe_trace","若主人问起，我会回答。"],["kasen","……你别在这个帖子里说得这么直接。"]],requires:"history"},
+{id:"P014",title:"【游戏】来说一句绝对不能给主人听的话",author:"tsuru",board:"旧帖",when:"旧记录 · 06-09",body:"规则很简单：只说一句绝对不能当着主人面说的话。谁先被本人抓到谁输。不要删帖，删帖也算输。",replies:[["midare","主人夸我的时候我会偷偷记下来！"],["hakata","主人上次买东西根本没砍价。"],["hasebe_trace","……我并不满足于只是被主人需要。"],["tsuru","哇。这个可是真的不能让主人看到。"]],requires:"history"},
+{id:"P015",title:"谁有主人以前房间的照片",author:"nansen",board:"旧帖",when:"旧记录 · 日期缺失",body:"管理员说旧备份坏了一部分。我记得以前有人拍过主人房间，尤其是书桌那边。不是要翻什么隐私，只是想确认一件东西以前到底放在哪里。",replies:[["kasen","我有纸本，不要传论坛。"],["yagen","旧登录便签也许还在抽屉夹层。"],["admin","恢复到关联历史用户：<OLDID>"]],requires:"history"}
+
+];
+
+const EXTRA_REPLIES={
+ P017:[["yagen","我这边看到的在线名单也少一个。先别一直刷新。"],["tsuru","数字比人多一个，听起来倒像个不错的惊吓。可惜这次不像我做的。"],["hakata","鹤丸殿你最好真的没做。"],["admin","已保存前台与后台会话快照。"]],
+ P013:[["yagen","别为了这个一直熬夜算，大将还在恢复。"],["hakata","我只是看不惯对不上的数！"],["kasen","既然管理员已经在查，就先停手。"],["sayo","……一直都是一个。"]],
+ P010:[["hori","我把出现问题的主题地址整理成列表发给管理员了。"],["admin","收到。先停止重复访问这些主题。"],["hakata","那在线人数的问题呢？"],["admin","暂时没有证据表明是同一问题。"]],
+ P009:[["hori","我也遇到过一次回复数变化。"],["yagen","截图留了吗？"],["midare","没有，刷新就没了。"],["hakata","我刚才去看，列表时间也变了。"],["admin","该主题稍后将关闭，请勿继续刷新。"]],
+ P008:[["hakata","主题时间会跟着一起变吗？"],["hori","会，但只有列表时间变，正文没有新增。"],["admin","这条很重要，我去查索引。"],["kasen","别再翻得太深。至少今晚别。"]],
+ P012:[["hori","正常迁移应该会留下新的注册记录。"],["yamanba","所以我才觉得奇怪。"],["admin","该主题涉及历史账户信息，将临时关闭。"],["kasen","山姥切，先别继续翻了。"]],
+ P016:[["yagen","别徒手碰破损的御守，尤其是里面的纸。"],["aki","我有用纸垫着！"],["sayo","是在旧仓库哪一边？"],["aki","靠石阶、接近墙角那里。"],["kasen","位置记住就好，不要再回去找。"]],
+ P024:[["midare","我也来！五虎退别一个人抬高的架子。"],["gokotai","好、好的。"],["yamanba","我已经过去了。"],["kasen","收完记得把窗边那一排也拿下来。"]],
+ P023:[["yagen","大将那份别放太多梅干。"],["shokudaikiri","知道，给主人的单独放。"],["hakata","我加海苔。"],["midare","那我加芝麻！"]],
+ P022:[["midare","才几个而已，也许是小鸟？"],["kasen","小鸟不会把蒂整齐放在旁边。"],["tsuru","犯人很有礼貌啊。"],["kuri","更无聊了。"],["hakata","建议查畑当番表。"]],
+ P011:[["midare","主人下午还说闻到甜的会有点想吃。"],["kasen","那就少量做一点。"],["yagen","先不要拿一桌东西围着大将。看着就有压力。"],["hasebe_here","我明白。"]],
+ P021:[["gokotai","我已经把梳子洗过一遍了……"],["midare","没事啦，我再洗一次就好。"],["yagen","梳齿没坏就行。"],["shokudaikiri","下次给小老虎们准备一把专门的。"]],
+ P001:[["yagen","空盒为什么还留在冰箱里？"],["midare","对！这才是最过分的！"],["hakata","冰箱旁边不是有纸吗，吃了至少记一笔。"],["shokudaikiri","明天给乱补做两个。"],["midare","三个。精神损失也要算。"]],
+ P020:[["midare","我也去！不过我起得来的话。"],["yagen","主人只能在廊下看，别把人往山上带。"],["aki","知道！我会先去看路滑不滑。"],["sayo","清晨可能还有雾。"]],
+ P002:[["shokudaikiri","需要我顺便把明早饲料先备好吗？"],["kuri","不用。"],["tsuru","回答得真快。"],["kasen","你若闲得慌就来替我畑当番。"]],
+ P003:[["yagen","先确认挂钩是不是松了。"],["gokotai","检查过了，是好的。"],["hori","会不会是廊下有穿堂风？"],["gokotai","窗都关着……"],["sayo","它不是每天都响。"]],
+ P005:[["kuri","远征报酬单没错。"],["hakata","所以我才说少了！"],["yagen","先核一下出发前的库存，别只看回来的单子。"],["hakata","我现在去翻。"],["kasen","查清楚再说，别一晚上都耗在这本账上。"]],
+ P018:[["yagen","有时想不起来，不代表那段时间不存在。"],["kasen","可如果继续等只会让对方难过呢？"],["hasebe_trace","那就不让主人知道我在等。"],["kasen","……你这种回答一点也不风雅。"]],
+ P019:[["hori","这个工具会直接删账号吗？"],["aoe","准确说是归档，不是删除。正常账号别碰。"],["yagen","你最好在帖子里把风险写大一点。"],["aoe","已经写了呀——‘别拿活人的账号试’。"],["admin","这句话并不能替代技术说明。"]],
+ P006:[["midare","值班记录也被拿了？鹤丸你胆子好大。"],["tsuru","我只是想让长谷部体验一下寻找重要物品的乐趣。"],["hasebe_trace","我现在正在寻找你。"],["yagen","鹤丸，建议你跑。"]],
+ P007:[["hakata","生日这种密码从安全性来说不合格。"],["tsuru","但从长谷部来说非常合格。"],["midare","主人要是看到这帖不就知道了吗？"],["hasebe_trace","所以我现在就想删帖。"],["kasen","你别真去麻烦管理员。"]],
+ P004:[["yagen","大将主动问到具体的人，也别所有人一起抢着解释。"],["kasen","我赞成。隐瞒和代替主人回忆不是一回事。"],["hori","那就只回答主人真正问到的部分。"],["tsuru","……这可比准备惊吓难多了。"]],
+ P014:[["kasen","这个游戏一点也不风雅。"],["tsuru","所以歌仙要不要来一句？"],["kasen","不要。"],["yagen","大将半夜偷吃点心以后会把包装藏在最下面。"],["midare","药研你这个也很危险！"]],
+ P015:[["nansen","纸本也行，我只想看书桌那块。"],["kasen","你先告诉我为什么。"],["nansen","旧归档里有一张截图位置对不上，喵。"],["hori","我也看到了。像是账号资料少了一段。"],["admin","历史用户索引恢复中，不要重复提交。"]]
+};
+Object.entries(EXTRA_REPLIES).forEach(([id,rs])=>{let p=POSTS.find(x=>x.id===id);if(p)p.replies.push(...rs)});
+
+function clone(x){return JSON.parse(JSON.stringify(x))}
+function load(){try{return Object.assign(clone(DEFAULT_STATE),JSON.parse(localStorage.getItem("honmaru_forum_v7_dual_guidance")||"{}"))}catch(e){return clone(DEFAULT_STATE)}}
+function save(){localStorage.setItem("honmaru_forum_v7_dual_guidance",JSON.stringify(S))}
+function esc(s=""){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function nameOf(id){let u=USERS[id];return typeof u?.name==="function"?u.name():u?.name||id}
+function avatarOf(id){let u=USERS[id];return typeof u?.avatar==="function"?u.avatar():u?.avatar||"?"}
+function birthdayCode(){return (S.birthday||"").replace(/\D/g,"")}
+function oldOwnerId(){return S.nickname||"主人"}
+function makeLegacyPassword(){let b=birthdayCode();return "hb-"+(b.slice(4)||"0000")+"-"+((S.nickname||"主").length+17)}
+function userAvatarHTML(id,cls=""){return `<div class="avatar ${id.startsWith("hasebe")?"hasebe":""} ${cls}">${esc(avatarOf(id))}</div>`}
+
+function availablePosts(){
+ return POSTS.filter(p=>{
+  if(!p.requires)return true;
+  if(p.requires==="afterDelete")return S.currentHasebeDeleted;
+  if(p.requires==="afterHorror")return S.horrorComplete;
+  if(p.requires==="history")return S.hiddenHistoryOpen;
+  if(p.requires==="ghost")return S.identityChoice==="ghost";
+  return false;
+ });
+}
+function onlineUsers(){
+ let ids=["midare","yagen","kasen","tsuru","hakata","sayo","aoe"];
+ if(!S.currentHasebeDeleted)ids.unshift("hasebe_here");
+ if(S.duplicateVisible)ids.unshift("hasebe_trace");
+ return ids;
+}
+function ensureDM(id){
+ if(S.dms[id])return;
+ const seed={
+  hasebe_here:[{from:"them",text:"主人，我在。有什么需要就叫我。"}],
+  hasebe_trace:[{from:"them",text:"主人。"},{from:"them",text:"您现在平安吗？"}],
+  midare:[{from:"them",text:"主人！今天要不要来我这里玩？我有新发饰给你看。"}],
+  yagen:[{from:"them",text:"大将，今天头还疼吗？药记得按时吃。"}],
+  kasen:[{from:"them",text:"主人，晚些时候若有精神，可以来看看庭里的花。"}],
+  tsuru:[{from:"them",text:"哟，主人。今天有没有被什么吓一跳？没有的话可真遗憾。"}],
+  hakata:[{from:"them",text:"主人！采购账我整理好咯，要看随时都可以。"}],
+  sayo:[{from:"them",text:"主人。……外面下雨了。"}],
+  aoe:[{from:"them",text:"主人？正好，我刚把手上的东西收完一点。"}],
+  hori:[{from:"them",text:"主人，有什么我能帮忙的吗？"}],
+  aki:[{from:"them",text:"主人！今天外面也有好多新鲜事。"}],
+  kuri:[{from:"them",text:"有事？"}],
+  gokotai:[{from:"them",text:"主、主人……小老虎们也在。"}],
+  yamanba:[{from:"them",text:"主人。找我有什么事。"}],
+  nansen:[{from:"them",text:"主人？先说好，别叫我猫。"}],
+  admin:[{from:"them",text:"这里是论坛维护账号。请描述需要处理的问题。"}]
+ };
+ S.dms[id]=clone(seed[id]||[{from:"them",text:"主人？"}]);save();
+}
+function addDM(id,from,text){ensureDM(id);S.dms[id].push({from,text});save()}
+function bubbleLines(text){let out=[];String(text||"").split("\n").forEach(part=>{let t=part.trim();if(!t)return;let m=t.match(/[^。！？]*[。！？]+|[^。！？]+$/g);(m||[t]).forEach(x=>{x=x.trim();if(x)out.push(x)})});return out}
+function typingNow(id,on){if(view!=="messages"||currentDM!==id)return;let t=document.getElementById("typing");if(!t)return;t.classList.toggle("active",!!on);t.textContent=on?nameOf(id):""}
+function runDMSequence(id,steps,onDone){let token=++dmSequenceToken;dmBusy=true;render();let i=0;function next(){if(token!==dmSequenceToken)return;if(i>=steps.length){dmBusy=false;if(onDone)onDone();save();render();return}let st=steps[i++],wait=st.delay??(st.from==="them"?460:140),pause=st.pause??420;if(st.from==="them"){typingNow(id,true);setTimeout(()=>{if(token!==dmSequenceToken)return;typingNow(id,false);addDM(id,"them",st.text);if(view==="messages"&&currentDM===id)render();else unread(id);setTimeout(next,pause)},wait)}else{setTimeout(()=>{if(token!==dmSequenceToken)return;addDM(id,st.from,st.text);if(view==="messages"&&currentDM===id)render();setTimeout(next,pause)},wait)}}next()}
+function conversation(id,mine,replies,onDone){let steps=[];if(mine)steps.push({from:"me",text:mine,delay:0,pause:220});(Array.isArray(replies)?replies:bubbleLines(replies)).forEach(x=>steps.push({from:"them",text:x}));runDMSequence(id,steps,onDone)}
+function unread(id){S.unread[id]=(S.unread[id]||0)+1;save()}
+function totalUnread(){return Object.values(S.unread||{}).reduce((a,b)=>a+(+b||0),0)}
+
+function topHTML(){return `<header class="topbar"><div class="brand">本丸论坛 <small>HONMARU</small></div><div class="search"><input id="searchInput" value="${esc(searchTerm)}" placeholder="搜索帖子或用户"></div><div class="account-mini"><span class="online-dot"></span>${esc(S.nickname||"未登录")}</div></header>`}
+function sideHTML(){let u=totalUnread();return `<aside class="panel sidebar"><div class="mebox"><div class="row">${userAvatarHTML("me")}<div><b>${esc(S.nickname)}</b><div class="small">审神者</div></div></div></div><button class="nav ${view==="home"?"active":""}" onclick="go('home')">首页<span>›</span></button><button class="nav ${view==="messages"?"active":""}" onclick="go('messages')">私信${u?`<span class="badge">${u}</span>`:""}</button><button class="nav ${view==="profile"&&currentProfile==="me"?"active":""}" onclick="openProfile('me')">我的空间<span>›</span></button><button class="nav ${view==="favorites"?"active":""}" onclick="go('favorites')">收藏<span>${S.favorites.length||""}</span></button><button class="nav" onclick="resetAsk()">退出账号<span>↻</span></button></aside>`}
+function onlineHTML(){let ids=onlineUsers();let front=ids.length+(S.horrorComplete?1:0);return `<aside class="panel online-panel"><h3>在线用户 <span class="count">${front}</span></h3>${ids.map(id=>`<div class="online-user" onclick="openProfile('${id}')"><span class="dot"></span>${userAvatarHTML(id,"sm")}<div><div style="font-size:12px">${esc(nameOf(id))}</div><div class="small">在线</div></div></div>`).join("")}</aside>`}
+function shell(main){return topHTML()+`<div class="layout">${sideHTML()}<main class="panel main">${main}</main>${onlineHTML()}</div>`}
+
+function render(){cleanupHorror();if(!S.registered){renderRegister();return}if(S.ending){renderEnding();return}let main="";if(view==="home")main=renderHome();else if(view==="post")main=renderPost();else if(view==="profile")main=renderProfile();else if(view==="messages")main=renderMessages();else if(view==="search")main=renderSearch();else if(view==="favorites")main=renderFavorites();else if(view==="oldlogin")main=renderOldLogin();else if(view==="archive")main=renderArchive();else if(view==="tool")main=renderTool();else main=renderHome();document.getElementById("app").innerHTML=shell(main);bindSearch();if(view==="profile"&&currentProfile==="hasebe_trace"&&S.oldProfileUnlocked&&!S.horrorRecovered)setTimeout(bindHorror,0);if(view==="messages")setTimeout(()=>{let c=document.getElementById("chatlog");if(c)c.scrollTop=c.scrollHeight},0)}
+function renderRegister(){document.getElementById("app").innerHTML=`<div style="min-height:100vh;display:grid;place-items:center;background:#24211e;padding:20px"><div class="modal-card"><div class="small">本丸论坛 / 新账号</div><h2>基本资料</h2><p>昵称、生日和自我介绍尚未填写。</p><div class="field"><label>昵称</label><input id="regName" maxlength="20" placeholder="主人"></div><div class="field"><label>生日</label><input id="regBirthday" type="date"></div><div class="field"><label>自我介绍</label><textarea id="regIntro" rows="3"></textarea></div><button class="btn primary" onclick="registerNow()">进入论坛</button></div></div>`;setTimeout(firstContact,120)}
+function firstContact(){if(S.registered||document.getElementById("overlay").innerHTML)return;modal("へし切長谷部",`<div class="bubble-row">${userAvatarHTML("hasebe_here","sm")}<div class="bubble">主人，醒了吗？</div></div><div class="bubble-row">${userAvatarHTML("hasebe_here","sm")}<div class="bubble">您原来那个论坛账号的密码还是没找到。</div></div><div class="bubble-row">${userAvatarHTML("hasebe_here","sm")}<div class="bubble">我试过您以前常用的几种，也都不对。</div></div><div class="bubble-row">${userAvatarHTML("hasebe_here","sm")}<div class="bubble">一直卡在登录那里也没办法，我先替您重新注册了一个。</div></div><div class="bubble-row">${userAvatarHTML("hasebe_here","sm")}<div class="bubble">新的账号还是空的。昵称、生日和自我介绍，主人按现在想写的填就好。</div></div><div class="bubble-row">${userAvatarHTML("hasebe_here","sm")}<div class="bubble">以前是什么样，不急着现在想起来。</div></div><div class="bubble-row">${userAvatarHTML("hasebe_here","sm")}<div class="bubble">身体不舒服就别勉强。填完就能用了。</div></div>`,true)}
+function registerNow(){let n=document.getElementById("regName").value.trim(),b=document.getElementById("regBirthday").value;if(!n||!b)return;S.registered=true;S.nickname=n;S.birthday=b;S.intro=document.getElementById("regIntro").value.trim();ensureDM("hasebe_here");S.dms.hasebe_here.unshift({from:"them",text:"主人，醒了吗？"},{from:"them",text:"您原来那个论坛账号的密码还是没找到。"},{from:"them",text:"一直卡在登录那里也没办法，我先替您重新注册了一个。"},{from:"them",text:"新的账号还是空的。昵称、生日和自我介绍，主人按现在想写的填就好。"});save();closeModal();view="home";render()}
+function bindSearch(){let i=document.getElementById("searchInput");if(!i)return;i.addEventListener("keydown",e=>{if(e.key==="Enter"){searchTerm=i.value.trim();view="search";render()}})}
+function go(v){searchTerm="";view=v;currentPost=null;currentPostFresh=false;if(v==="messages"){if(!currentDM){let ids=Object.keys(S.dms);currentDM=ids[0]||"hasebe_here"}if(currentDM)S.unread[currentDM]=0;save()}render()}
+
+function renderHome(){
+ let ps=availablePosts();
+ if(S.identityChoice==="ghost"){
+  let idx=ps.findIndex(p=>p.id==="P019");
+  if(idx>0){
+   let featured=ps[idx];
+   ps=[featured,...ps.slice(0,idx),...ps.slice(idx+1)];
+  }
+ }
+ return `<div class="pagehead"><div><h1>本丸论坛</h1><div class="small">今天也请文明使用论坛。</div></div><div class="filters"><span class="filter">全部</span><span class="filter">杂谈</span><span class="filter">旧帖</span></div></div><div class="post-list">${ps.map(postRow).join("")}</div>`
+}
+function postRow(p){let read=S.reads.includes(p.id),banned=(S.bannedPosts||[]).includes(p.id);return `<div class="post-row" style="${banned?'opacity:.58':''}"><div onclick="${banned?'void(0)':`openProfile('${p.author}')`}">${p.anon?'<div class="avatar">匿</div>':userAvatarHTML(p.author)}</div><div><div class="post-title" onclick="openPost('${p.id}')">${banned?'【已封禁】 ':''}${p.title}${!read&&!banned?`<span class="newmark">NEW</span>`:""}</div><div class="post-meta">${banned?'该主题已被管理员封禁':`${p.anon?'匿名':esc(nameOf(p.author))} · ${p.when} · 回复 ${p.replies.length}`}</div></div><span class="board">${banned?'封禁':p.board}</span></div>`}
+function openPost(id){let p=POSTS.find(x=>x.id===id);if(!p||!availablePosts().some(x=>x.id===id))return;if(S.mirrorPostPendingBan&&id!=="P044"){S.mirrorPostSteps=(S.mirrorPostSteps||0)+1;if(S.mirrorPostSteps>=2){S.bannedPosts=S.bannedPosts||[];if(!S.bannedPosts.includes("P044"))S.bannedPosts.push("P044");S.mirrorPostPendingBan=false}}let alreadyBanned=(S.bannedPosts||[]).includes(id);currentPostFresh=!alreadyBanned;currentPost=id;view="post";if(!S.reads.includes(id)){S.reads.push(id);S.viewCount++;if(S.viewCount>=4&&!S.duplicateVisible){S.duplicateVisible=true;ensureDM("hasebe_trace");unread("hasebe_trace")}}if(p.autoBan&&!alreadyBanned){S.bannedPosts=S.bannedPosts||[];S.bannedPosts.push(id)}if(id==="P044"&&!alreadyBanned){S.mirrorPostPendingBan=true;S.mirrorPostSteps=0}if(id==="P015")S.oldIdFound=true;if(id==="P018"&&!S.treeChanged)setTimeout(treeMutation,1200);save();render();if(p.melt&&!S.meltSeen)setTimeout(startMeltPost,380)}
+function renderPost(){let p=POSTS.find(x=>x.id===currentPost);if(!p)return renderHome();if((S.bannedPosts||[]).includes(p.id)&&!currentPostFresh)return `<div class="post-view"><button class="back" onclick="go('home')">← 返回</button><div style="padding:70px 20px;text-align:center"><div style="font-size:20px;font-weight:700;margin-bottom:12px">该主题已被封禁</div><div class="small">管理员已关闭此主题，原内容无法继续查看。</div></div></div>`;let replies=p.replies.map(x=>[...x]);if(p.id==="P009"&&S.horrorComplete)replies.push(["hasebe_trace","主人。"]);if(p.id==="P018"&&S.treeChanged)replies[1]=["hasebe_trace","主人が忘れても、俺は忘れません。だから、どうか。"];let inner=`<button class="back" onclick="go('home')">← 返回</button><h1 class="thread-title">${p.title}</h1><div class="thread-sub">${p.anon?"匿名":esc(nameOf(p.author))} · ${p.when}</div>${floor(p.author,p.body,1,p.anon)}${replies.map((r,i)=>floor(r[0],String(r[1]).replace("<OLDID>",`<button style="border:0;background:transparent;color:#6d2530;text-decoration:underline;padding:0" onclick="openOldLogin()">${esc(oldOwnerId())}</button>`),i+2,r[0]==="anonymous")).join("")}${p.closedText?`<div class="thread-closed">${esc(p.closedText)}</div>`:""}<div class="btnrow"><button class="btn" onclick="toggleFav('${p.id}')">${S.favorites.includes(p.id)?"取消收藏":"收藏"}</button></div>`;if(p.melt)return `<div id="meltThread" class="post-view melt-thread">${inner}<div id="meltGhostLayer" class="melt-ghost-layer"></div></div>`;return `<div class="post-view">${inner}</div>`}
+function floor(uid,body,no,anon=false){let isAnon=anon||uid==="anonymous",label=isAnon?"匿名":nameOf(uid);return `<div class="floor"><div class="floor-user" ${isAnon?"":`onclick="openProfile('${uid}')"`}>${isAnon?`<div class="avatar">匿</div>`:userAvatarHTML(uid)}<div style="font-size:11px;margin-top:5px">${esc(label)}</div></div><div class="floor-body"><span class="floor-no">#${no}</span>${body}<div class="floor-actions"><button>引用</button><button>点赞</button></div></div></div>`}
+function toggleFav(id){let i=S.favorites.indexOf(id);if(i>=0)S.favorites.splice(i,1);else S.favorites.push(id);save();render()}
+function renderFavorites(){let ps=POSTS.filter(p=>S.favorites.includes(p.id)&&availablePosts().some(x=>x.id===p.id));return `<div class="pagehead"><h1>收藏</h1></div><div class="post-list">${ps.length?ps.map(postRow).join(""):`<div style="padding:36px;text-align:center;color:#999">暂无收藏</div>`}</div>`}
+function startMeltPost(){let root=document.getElementById("meltThread"),layer=document.getElementById("meltGhostLayer");if(!root||S.meltSeen)return;setTimeout(()=>root&&root.classList.add("melt1"),900);setTimeout(()=>{if(!root)return;root.classList.add("melt2");if(layer)layer.innerHTML="<span>无　异　常</span><span>■■:■■</span><span>主人</span><span>譁ｰ蜿門ｾ励＠縺ｾ縺励◆</span>"},2200);setTimeout(()=>{if(!root)return;root.classList.add("melt3");if(layer)layer.innerHTML="<span>主　人　主　人</span><span>縺薙％縺ｫ縺ｯ縺?↑縺?</span><span>夜　间　无　异　常</span><span>主人？</span><span>404　404　404</span><span>蜿ょｼ</span>"},3900);setTimeout(()=>{if(!root)return;root.classList.add("melt4");if(layer)layer.innerHTML+="<b>不　要　刷　新</b><b>主　人</b><b>■■■■■■</b>";S.meltSeen=true;save()},5600)}
+function treeMutation(){if(view!=="post"||currentPost!=="P018"||S.treeChanged)return;S.treeChanged=true;save();render()}
+
+function openProfile(id){if(id==="admin"&&USERS.admin==null)return;if(id==="hasebe_here"&&S.currentHasebeDeleted)return;if(id==="hasebe_trace"&&!S.duplicateVisible)return;currentProfile=id;view="profile";render()}
+function renderProfile(){let id=currentProfile||"me",u=USERS[id];if(!u)return `<div style="padding:30px">用户不存在。</div>`;if(id==="hasebe_trace"&&!S.oldProfileUnlocked)return renderLockedHasebe();if(id==="hasebe_trace"&&S.oldProfileUnlocked)return renderHorrorSpace();let space=(id==="me"?[S.intro||"刚重新注册了论坛账号。","伤还没完全好，最近大部分时间都在本丸里休息。","论坛里以前的东西看起来很多，慢慢再看。","今天终于能坐着看一会儿屏幕，不会马上头晕了。"]:u.space)||[];return `<div class="profile"><div class="profile-head">${userAvatarHTML(id)}<div><div class="profile-name">${esc(nameOf(id))}</div><div class="small">ID：${esc(nameOf(id))}</div><div class="small">${esc(u.bio||"")}</div></div><div class="profile-actions">${id!=="me"?`<button class="btn primary" onclick="openDM('${id}')">发私信</button>`:""}</div></div><div class="space-tabs"><b>空间</b><span>帖子</span><span>回复</span></div>${space.map((t,i)=>`<div class="space-entry"><div class="entry-date">${i===0?"今天":"更早"}</div>${esc(t)}</div>`).join("")}</div>`}
+function renderLockedHasebe(){return `<div class="lock-screen"><div class="lock-card"><div class="lock-icon">⌁</div><h2 style="margin:0 0 8px">へし切長谷部</h2><p class="small">ID：へし切長谷部</p><p class="small">该用户空间设置了访问密码。</p><div class="field"><label>密码</label><input id="hasebeSpacePass" inputmode="numeric" autocomplete="off"></div><div id="spaceError" class="inline-error"></div><button class="btn primary" onclick="unlockHasebeSpace()">确认</button><div class="btnrow" style="justify-content:center"><button class="btn" onclick="openDM('hasebe_trace')">发私信</button></div></div></div>`}
+function unlockHasebeSpace(){let v=(document.getElementById("hasebeSpacePass").value||"").replace(/\D/g,"");if(v!==birthdayCode()){document.getElementById("spaceError").textContent="密码错误";return}S.oldProfileUnlocked=true;save();render();setTimeout(()=>window.scrollTo(0,0),0)}
+function horrorNormalEntries(){return ["今日近侍。主人午后有些困，晚饭前不要让任何人去打扰。","主人又忘了带御守。已经放回桌上。","鹤丸把值班表藏起来了。找到之后再处理他。","主人今天终于把药喝完了。","出阵回来得晚，主人还在等。下次不许这样。","主人说想吃甜的。已经让烛台切少放一点糖。","今天没有什么特别的事。这样最好。","主人睡着以后把灯关了。","主人又把密码忘了。以后我替您记着。","主人今天笑了。","近侍记录：无异常。","主人平安。"]}
+function horrorCorruptEntries(){return ["主人。","主人，对不起。","主人　主人　主人　主人","对不起。没能做到。","主人在哪里。主人。","对不起主人对不起主人对不起主人","主人　您要平安　主人","对不起　对不起　对不起","主人主人主人主人主人主人主人","没能保护好您。对不起。","主人。请醒过来。主人。","对不起主人对不起主人对不起主人对不起主人","主人　主人　主人　主人　主人　主人","如果我不能继续陪着您","主人对不起主人对不起主人对不起主人对不起主人","主人主人主人主人主人主人主人主人主人主人","对不起对不起对不起对不起对不起对不起","主人。"]}
+function renderHorrorSpace(){let normals=horrorNormalEntries();if(S.horrorRecovered){return `<div class="profile"><div class="profile-head">${userAvatarHTML("hasebe_trace")}<div><div class="profile-name">へし切長谷部</div><div class="small">ID：へし切長谷部</div><div class="small">动态 384</div></div><div class="profile-actions"><button class="btn primary" onclick="openDM('hasebe_trace')">发私信</button></div></div><div class="space-tabs"><b>空间</b><span>帖子</span><span>回复</span></div>${normals.map((t,i)=>`<div class="space-entry"><div class="entry-date">${i<2?"今天":i<6?"较早":"历史记录"}</div>${esc(t)}</div>`).join("")}</div>`}let bad=horrorCorruptEntries();return `<div id="horrorSpace" class="horror-space"><div class="profile-head">${userAvatarHTML("hasebe_trace")}<div><div class="profile-name">へし切長谷部</div><div class="small">ID：へし切長谷部</div><div class="small" id="spaceCount">动态 384</div></div><div class="profile-actions"><button class="btn primary" onclick="openDM('hasebe_trace')">发私信</button></div></div><div class="horror-feed"><div class="space-tabs"><b>空间</b><span>帖子</span><span>回复</span></div>${normals.map((t,i)=>`<div class="h-entry normal"><div class="entry-date">${i<2?"今天":i<6?"较早":"历史记录"}</div>${esc(t)}</div>`).join("")}${bad.map((t,i)=>`<div class="h-entry corrupt"><div class="entry-date">${i%3===0?"刚刚":"--:--"}</div><div class="corrupt-text">${esc((t+"　").repeat(Math.min(5,1+Math.floor(i/3))))}</div></div>`).join("")}<div class="horror-end">主人　对不起　主人<small>最后活动：刚刚</small></div></div></div>`}
+function bindHorror(){if(S.horrorRecovered||horrorScrollBound)return;horrorScrollBound=true;window.addEventListener("scroll",horrorScroll,{passive:true});prepareBlood();horrorScroll()}
+function prepareBlood(){let f=document.getElementById("bloodFlood");if(!f||f.dataset.ready)return;f.dataset.ready="1";let words=[];for(let i=0;i<180;i++){let w=i%3===0?"对不起":"主人";let left=(i*37%103),top=(i*53%107),size=18+(i*17%46),rot=-18+(i*23%37);words.push(`<span class="blood-word" style="left:${left}%;top:${top}%;font-size:${size}px;transform:rotate(${rot}deg)">${w}</span>`)}for(let i=0;i<18;i++)words.push(`<span class="blood-streak" style="left:${(i*7.1)%100}%"></span>`);f.innerHTML=words.join("")}
+function horrorScroll(){let h=document.getElementById("horrorSpace");if(!h||S.horrorRecovered)return;let top=h.offsetTop,max=Math.max(1,h.scrollHeight-window.innerHeight),p=Math.max(0,Math.min(1,(window.scrollY-top)/max));h.classList.toggle("terror1",p>.32);h.classList.toggle("terror2",p>.50);h.classList.toggle("terror3",p>.67);h.classList.toggle("terror4",p>.82);let r=document.getElementById("redVeil"),d=document.getElementById("darkVeil"),b=document.getElementById("bloodFlood");[r,d,b].forEach(x=>x.style.display="block");r.style.opacity=String(Math.max(0,(p-.35)*.72));d.style.opacity=String(Math.max(0,(p-.58)*.64));b.style.opacity=String(Math.max(0,(p-.58)*2.8));let count=document.getElementById("spaceCount");if(count){count.textContent=p>.79?"动态 1 / 384":p>.58?"动态 384 384 384":"动态 384"}document.documentElement.classList.toggle("terror-max",p>.91);if(p>.965){if(!horrorBottomTimer)horrorBottomTimer=setTimeout(finishHorrorRecovery,3000)}else if(horrorBottomTimer){clearTimeout(horrorBottomTimer);horrorBottomTimer=null}}
+function finishHorrorRecovery(){horrorBottomTimer=null;if(S.horrorRecovered)return;S.horrorComplete=true;S.horrorRecovered=true;ensureDM("hasebe_trace");let a=S.dms.hasebe_trace;if(!a.some(m=>m.text==="……主人。"))a.push({from:"them",text:"……主人。"});unread("hasebe_trace");save();cleanupHorror();render();setTimeout(()=>window.scrollTo(0,0),0)}
+function cleanupHorror(){if(horrorBottomTimer){clearTimeout(horrorBottomTimer);horrorBottomTimer=null}if(horrorScrollBound){window.removeEventListener("scroll",horrorScroll);horrorScrollBound=false}document.documentElement.classList.remove("terror-max");["redVeil","darkVeil","bloodFlood"].forEach(id=>{let e=document.getElementById(id);if(e){e.style.display="none";e.style.opacity="0"}})}
+
+function openDM(id){if(id==="hasebe_here"&&S.currentHasebeDeleted)return;if(id==="hasebe_trace"&&!S.duplicateVisible)return;ensureDM(id);currentDM=id;S.unread[id]=0;save();view="messages";render()}
+function dmIds(){let ids=Object.keys(S.dms);if(S.currentHasebeDeleted)ids=ids.filter(x=>x!=="hasebe_here");return ids}
+function renderMessages(){let ids=dmIds();if(!ids.length){ensureDM("hasebe_here");ids=dmIds()}if(!currentDM||!ids.includes(currentDM))currentDM=ids[0];let msgs=S.dms[currentDM]||[];return `<div class="messages"><div class="dm-list">${ids.map(id=>{let a=S.dms[id],last=a[a.length-1];return `<div class="dm-row ${id===currentDM?"active":""}" onclick="openDM('${id}')"><div class="dm-name">${esc(nameOf(id))}${S.unread[id]?` <span class="badge">${S.unread[id]}</span>`:""}</div><div class="dm-preview">${esc(last?.text||"")}</div></div>`}).join("")}</div><div class="chat"><div class="chat-head" onclick="openProfile('${currentDM}')">${userAvatarHTML(currentDM,"sm")}<b>${esc(nameOf(currentDM))}</b></div><div id="chatlog" class="chat-log">${msgs.map(m=>m.from==="system"?`<div class="sys">${esc(m.text)}</div>`:`<div class="bubble-row ${m.from==="me"?"me":""}">${m.from!=="me"?userAvatarHTML(currentDM,"sm"):""}<div class="bubble">${esc(m.text)}</div></div>`).join("")}</div><div class="typing" id="typing"></div>${dmReplies(currentDM)}</div></div>`}
+function dmReplies(id){
+ if(dmBusy)return "";
+ if(id==="hasebe_here"){
+  if(S.duplicateVisible&&!S.currentHasebeDeleted)return replyButtons([["论坛里为什么有两个你的账号？","askCurrentDuplicate"]]);
+  return replyButtons([["今天我还需要吃药吗？","normal_here_medicine"],["晚饭吃什么？","normal_here_dinner"]]);
+ }
+ if(id==="hasebe_trace"){
+  if(S.horrorComplete&&S.askedSwords.length>=2&&!S.identityChoice)return replyButtons([["我问过他们了。你到底是谁？","beginIdentity"]]);
+  if(S.horrorComplete&&!S.identityChoice)return replyButtons([["你一直在问我平不平安，为什么？","trace_why_safe"],["你空间里的那些东西是什么？","trace_space"]]);
+  return replyButtons([["你是谁？","trace_early_who"],["我没事。","trace_safe"]]);
+ }
+ if(id==="yagen"){
+  let arr=[["今天还要吃药吗？","yagen_normal"]];
+  if(S.horrorComplete&&!S.askedSwords.includes("yagen"))arr.push(["我在长谷部的空间里看到了很奇怪的东西。","ask_yagen_identity"]);
+  if(S.oldIdFound&&!S.passwordLead)arr.push(["你知道我以前账号的密码吗？","ask_yagen_password"]);
+  return replyButtons(arr);
+ }
+ if(id==="tsuru"){
+  let arr=[["今天在做什么？","tsuru_normal"]];
+  if(S.horrorComplete&&!S.askedSwords.includes("tsuru"))arr.push(["你是不是早就知道论坛里有两个长谷部？","ask_tsuru_identity"]);
+  if(S.oldIdFound)arr.push(["你知道我以前论坛账号的密码吗？","tsuru_password"]);
+  return replyButtons(arr);
+ }
+ if(id==="kasen")return "";
+ if(id==="sayo"){
+  let arr=[["雨停了吗？","sayo_normal"]];
+  if(S.horrorComplete&&(S.reads.includes("P013")||S.reads.includes("P017"))&&!S.askedSwords.includes("sayo"))arr.push(["你说在线人数不对，那到底是什么意思？","ask_sayo_identity"]);
+  return replyButtons(arr);
+ }
+ if(id==="midare"){
+  let arr=[["新发饰是什么样的？","midare_normal"]];
+  if(S.horrorComplete&&S.reads.includes("P009")&&!S.askedSwords.includes("midare"))arr.push(["你看到过那个长谷部账号自己回复旧帖吗？","ask_midare_identity"]);
+  return replyButtons(arr);
+ }
+ if(id==="aoe"){
+  let arr=[["最近在做些什么？","aoe_normal"]];
+  // 三个验证项只在玩家实际打开并浏览过青江的工具帖之后出现。
+  if(S.identityChoice==="ghost"&&S.reads.includes("P019")){
+   if(!S.aoeHints.includes("identity"))arr.push(["“用户身份”这一项要怎么填？","aoe_hint_identity"]);
+   if(!S.aoeHints.includes("cause"))arr.push(["“存留原因”要填什么？","aoe_hint_cause"]);
+   if(!S.aoeHints.includes("admin"))arr.push(["“管理员密码”是从哪里找？","aoe_hint_admin"]);
+  }
+  return replyButtons(arr);
+ }
+ if(id==="admin"){
+  let arr=[["论坛最近正常吗？","admin_normal"]];
+  if(S.horrorComplete&&S.reads.includes("P010")&&!S.identityChoice){
+   arr.push(["这个多出来的长谷部账号到底是谁？","admin_hasebe_account"]);
+  }
+  return replyButtons(arr);
+ }
+ return replyButtons(normalOptions(id));
+}
+function actionUsed(a){return (S.usedActions||[]).includes(a)}
+function markActionUsed(a){if(!S.usedActions)S.usedActions=[];if(!S.usedActions.includes(a))S.usedActions.push(a);save()}
+function replyButtons(arr){let visible=arr.filter(([t,a])=>!actionUsed(a));if(!visible.length)return "";return `<div class="replies">${visible.map(([t,a])=>`<button onclick="dmAction('${a}')">${esc(t)}</button>`).join("")}</div>`}
+function normalOptions(id){let map={hakata:[["最近账还对得上吗？","hakata_normal"]],hori:[["最近在整理什么？","hori_normal"]],aki:[["今天还去外面了吗？","aki_normal"]],kuri:[["明天马当番换好了吗？","kuri_normal"]],gokotai:[["小老虎们还好吗？","gokotai_normal"]],yamanba:[["最近在忙什么？","yamanba_normal"]],nansen:[["今天没闯祸吧？","nansen_normal"]],admin:[["论坛最近正常吗？","admin_normal"]],shokudaikiri:[["今晚还有吃的吗？","shokudai_normal"]]};return map[id]||[]}
+function pushPair(id,mine,theirs){conversation(id,mine,bubbleLines(theirs))}
+function markAsked(id){if(!S.askedSwords.includes(id))S.askedSwords.push(id);save()}
+function dmAction(a){let id=currentDM;markActionUsed(a);
+ const simple={
+  normal_here_medicine:["今天我还需要吃药吗？",["药研说今晚那次不能省。","水已经放在您房里了。"]],normal_here_dinner:["晚饭吃什么？",["歌仙在做清淡的。","您要是想吃别的，我去说。"]],
+  trace_early_who:["你是谁？",["へし切長谷部。","您的刀。"]],trace_safe:["我没事。",["……那就好。"]],trace_why_safe:["你一直在问我平不平安，为什么？",["因为这件事对我来说，比别的都重要。","您平安就好。"]],trace_space:["你空间里的那些东西是什么？",["……是我没能收拾好的东西。","主人不必现在就理解。"]],
+  yagen_normal:["今天还要吃药吗？",["要。","大将别想装忘了。"]],tsuru_normal:["今天在做什么？",["刚喝完茶。","什么都没做。","怎么，主人一副很不相信我的样子？"]],sayo_normal:["雨停了吗？",["还没有。","檐下有水声。"]],midare_normal:["新发饰是什么样的？",["粉色的！","等下次见面给你看。"]],hakata_normal:["最近账还对得上吗？",["大部分对得上。","论坛在线人数不算账。","不然我会更头痛。"]],aoe_normal:["最近在做些什么？",["最近没什么事。","就是喝喝茶，挺好的。","不过……主人身边好像有不太干净的东西，要注意一下哦。","…………","开玩笑的。"]],hori_normal:["最近在整理什么？",["一些很久以前的帖子。","数量比我想的多。"]],aki_normal:["今天还去外面了吗？",["去了。","风有点大，我很快就回来了。"]],kuri_normal:["明天马当番换好了吗？",["换好了。"]],gokotai_normal:["小老虎们还好吗？",["嗯！","今天都很有精神。"]],yamanba_normal:["最近在忙什么？",["整理论坛归档。","没什么特别的。"]],nansen_normal:["今天没闯祸吧？",["都说了不是猫会闯的祸，喵……","啧。"]],admin_normal:["论坛最近正常吗？",["目前可以正常使用。","今晚会做一次例行维护，不影响发帖和私信。"]],shokudai_normal:["今晚还有吃的吗？",["有。","给你留了一小份茶泡饭。"]]
+ };
+ if(simple[a]){conversation(id,simple[a][0],simple[a][1]);return}
+ if(a==="askCurrentDuplicate"){
+   runDMSequence("hasebe_here",[
+    {from:"me",text:"论坛里为什么有两个你的账号？",delay:0},{from:"them",text:"……两个？"},{from:"them",text:"主人，把另一个账号的空间地址发给我。"},{from:"me",text:"就是和你同名同头像的那个。"},{from:"them",text:"……我知道了。"},{from:"them",text:"这件事，先不要问别人。"},{from:"them",text:"至少现在不要。"}
+   ],()=>{S.currentHasebeDeleted=true;delete S.dms.hasebe_here;delete S.unread.hasebe_here;save();currentDM="hasebe_trace";ensureDM("hasebe_trace")});return}
+ if(a==="admin_hasebe_account"){conversation("admin","这个多出来的长谷部账号到底是谁？",[
+   "该账号没有可供公开查询的有效注册记录。",
+   "如果一定要问，去找药研藤四郎、鹤丸国永。",
+   "小夜左文字和乱藤四郎也见过相关异常。",
+   "他们比管理员更适合回答这个问题。",
+   "管理员不提供进一步说明。"
+ ]);return}
+ if(a==="ask_yagen_identity"){markAsked("yagen");conversation("yagen","我在长谷部的空间里看到了很奇怪的东西。",["如果你问我那是不是正常的论坛缓存，答案当然不是。","但大将，先想一件事。","它到现在为止，有没有伤害过你？","……没有的话，就先别急着给它起名字。","你看到它一直在做什么？"]);return}
+ if(a==="ask_tsuru_identity"){markAsked("tsuru");conversation("tsuru","你是不是早就知道论坛里有两个长谷部？",["哈哈……主人终于问到这里了。","两个都说自己是长谷部，不是吗？","那到底什么才算‘长谷部’？","名字？","记忆？","还是现在站在你面前的人？","这个问题我可不替你答。"]);return}
+ if(a==="ask_sayo_identity"){markAsked("sayo");conversation("sayo","你说在线人数不对，那到底是什么意思？",["不是多了一个。","……只是有一个，一直没有下线。","主人，你应该自己问他。"]);return}
+ if(a==="ask_midare_identity"){markAsked("midare");conversation("midare","你看到过那个长谷部账号自己回复旧帖吗？",["……看到过。","可是主人，我不想告诉你‘那是什么’。","如果我说了，你以后看到的每一句话都会先变成我的答案。","你去问他，好不好？"]);return}
+ if(a==="beginIdentity"){runDMSequence("hasebe_trace",[{from:"me",text:"我问过他们了。你到底是谁？",delay:0},{from:"them",text:"……他们怎么说？"},{from:"me",text:"谁都不肯告诉我。"},{from:"them",text:"是吗。"},{from:"them",text:"那么，主人。"},{from:"them",text:"您觉得，我是谁？"}]);return}
+ if(a==="ask_yagen_password"){S.passwordLead=true;conversation("yagen","你知道我以前账号的密码吗？",["不知道。","不过有个人肯定记得。","长谷部记大将的密码，恐怕比大将自己还熟。","去问他吧。"]);return}
+ if(a==="tsuru_password"){conversation("tsuru","你知道我以前论坛账号的密码吗？",["这个我真不知道。","以前你忘密码，第一个被你叫过去的人又不是我。"]);return}
+ if(a==="aoe_hint_identity"){if(!S.aoeHints.includes("identity"))S.aoeHints.push("identity");conversation("aoe","“用户身份”这一项要怎么填？",["那个最简单。","输入你要处理的对方论坛账户 ID。","别填自己的哦。"]);return}
+ if(a==="aoe_hint_cause"){if(!S.aoeHints.includes("cause"))S.aoeHints.push("cause");conversation("aoe","“存留原因”要填什么？",["不是让你写一整句话。","填让他一直存留到现在的那个执念的‘词’就好。","可能是物。","也可能是人。","至于是什么，要你自己判断。"]);return}
+ if(a==="aoe_hint_admin"){if(!S.aoeHints.includes("admin"))S.aoeHints.push("admin");conversation("aoe","“管理员密码”是从哪里找？",["这个嘛……","我记得长谷部以前一直兼任论坛管理员。","再多说就等于把答案直接给你了吧？"]);return}
+ if(a==="startPasswordTalk"){startPasswordTalk();return}
+ if(a==="cleanup_yes1"){cleanupQuestion2();return}
+ if(a==="cleanup_stop1"){conversation("hasebe_trace","等一下。",["……好。","那就到这里吧，主人。"],()=>fadeToEnding("ignore"));return}
+ if(a==="cleanup_yes2"){conversation("hasebe_trace","继续。",["……遵命。","请您好好活下去。"],()=>fadeToEnding("peace"));return}
+ if(a==="cleanup_stop2"){conversation("hasebe_trace","不。",["……是。","我会留在这里。","只要您还允许。"],()=>fadeToEnding("ignore"));return}
+}
+function renderIdentityButtons(){return `<div class="replies"><button onclick="chooseIdentity('ghost')">你是哪里来的鬼魂，居然占据了长谷部的账号。</button><button onclick="chooseIdentity('hasebe')">我知道你就是长谷部。</button></div>`}
+const baseDmReplies=dmReplies;dmReplies=function(id){
+ if(id==="hasebe_trace"){
+  let arr=S.dms[id]||[],last=arr[arr.length-1]?.text||"";
+  if(last==="您觉得，我是谁？"&&!S.identityChoice)return renderIdentityButtons();
+  if(S.cleanupStep===1&&last==="主人，您真的决定要让我从这里离开吗？")return replyButtons([["……是。","cleanup_yes1"],["等一下。","cleanup_stop1"]]);
+  if(S.cleanupStep===2&&last==="您也要继续吗？")return replyButtons([["继续。","cleanup_yes2"],["不。","cleanup_stop2"]]);
+  if(S.passwordLead&&!S.passwordKnown){
+   if(S.talkRound>=0&&S.talkRound<4&&(last===TALK[S.talkRound]?.q||last==="再想想。"))return passwordTalkButtons();
+   if(!arr.some(m=>m.text==="我想问以前账号的密码。"))return replyButtons([["我想问以前账号的密码。","startPasswordTalk"]]);
+  }
+ }
+ return baseDmReplies(id);
+};
+function chooseIdentity(x){
+ S.identityChoice=x;save();
+ if(x==="ghost"){
+  conversation("hasebe_trace","你是哪里来的鬼魂，居然占据了长谷部的账号。",[
+   "……这样啊。",
+   "如果主人认为我是这样的话。",
+   "至少，我不会伤害您。"
+  ],()=>{
+   setTimeout(()=>{
+    if(!S.dms.aoe)S.dms.aoe=[];
+    save();
+    runDMSequence("aoe",[
+     {from:"them",text:"主人。",delay:700,pause:650},
+     {from:"them",text:"既然都想到“鬼”这一步了，有兴趣看看我的驱鬼工具吗？",delay:900,pause:900},
+     {from:"them",text:"我以前把它发在论坛里了。",delay:800,pause:750},
+     {from:"them",text:"去找找吧。",delay:850,pause:700}
+    ]);
+   },900);
+  });
+ }else{
+  conversation("hasebe_trace","我知道你就是长谷部。",[
+   "……是。",
+   "那么，请主人自己去看吧。",
+   "既然您这样认为，我也没有继续替您把那些东西关着的理由了。"
+  ],()=>{
+   S.hiddenHistoryOpen=true;
+   save();
+   setTimeout(()=>{
+    if(!S.dms.kasen)S.dms.kasen=[];
+    save();
+    runDMSequence("kasen",[
+     {from:"them",text:"主人。",delay:850,pause:700},
+     {from:"them",text:"如果您真的想知道以前发生了什么……",delay:900,pause:900},
+     {from:"them",text:"如果您觉得自己已经能够接受的话，就去找回以前那个账号吧。",delay:950,pause:1100},
+     {from:"them",text:"那个账号还留在论坛里。仔细找的话，应该能找到痕迹。",delay:900,pause:950},
+     {from:"them",text:"至于密码，我爱莫能助。",delay:1000,pause:1050},
+     {from:"them",text:"只能希望……还有有缘人替您记着。",delay:1100,pause:1250},
+     {from:"them",text:"我能说的，就只有这些。",delay:950,pause:800}
+    ]);
+   },1100);
+  });
+ }
+}
+
+const TALK=[
+ {q:"主人为什么一定要找回那些记录？",correct:"因为我觉得有人一直替我记着。",opts:["因为大家都不肯告诉我。","因为我觉得有人一直替我记着。","因为我想证明这个账号到底是什么。"]},
+ {q:"如果那些记忆并不好呢？",correct:"如果那是属于我的记忆，我想自己承担。",opts:["那就不要让我知道。","你替我决定就好。","如果那是属于我的记忆，我想自己承担。"]},
+ {q:"如果您之后看到那些记录，发现有些事情我最终没能替您做到……您会怪我吗？",correct:"那不是你的错。",opts:["那不是你的错。","我看完以后再决定。","所以你才一直不肯告诉我吗？"]},
+ {q:"现在您身边也有长谷部。主人希望我怎么理解这件事？",correct:"我希望你们都是长谷部。",opts:["只有一直陪着我的那个才算。","我希望你们都是长谷部。","我现在还没办法回答。"]}
+];
+function startPasswordTalk(){S.talkRound=0;S.talkFailed=false;S.talkUsedOptions={};save();conversation("hasebe_trace","我想问以前账号的密码。",["……我记得。",TALK[0].q])}
+function passwordTalkButtons(){let r=S.talkRound,item=TALK[r];if(!item||dmBusy)return "";let used=(S.talkUsedOptions&&S.talkUsedOptions[r])||[];let opts=item.opts.map((o,i)=>[o,i]).filter(([o])=>!used.includes(o));return `<div class="replies">${opts.map(([o,i])=>`<button onclick="passwordAnswer(${i})">${esc(o)}</button>`).join("")}</div>`}
+function passwordAnswer(i){let r=S.talkRound,item=TALK[r];if(!item||dmBusy)return;let ans=item.opts[i];S.talkUsedOptions=S.talkUsedOptions||{};S.talkUsedOptions[r]=S.talkUsedOptions[r]||[];if(!S.talkUsedOptions[r].includes(ans))S.talkUsedOptions[r].push(ans);save();if(ans!==item.correct){conversation("hasebe_trace",ans,["……主人。","不是这个意思。","再想想。"]);return}S.talkRound++;save();if(S.talkRound<4){conversation("hasebe_trace",ans,["……",TALK[S.talkRound].q])}else{S.passwordKnown=true;S.legacyPassword=makeLegacyPassword();save();conversation("hasebe_trace",ans,["我明白了。","密码我一直记着。","以前您总把这些小事随手丢给我，我也早就习惯替您记着了。","能再替您记一次，也很好。","密码："+S.legacyPassword])}}
+
+function renderSearch(){let q=searchTerm.toLowerCase(),ps=availablePosts().filter(p=>(p.title+nameOf(p.author)+p.body).toLowerCase().includes(q));let ids=Object.keys(USERS).filter(id=>id!=="me"&&nameOf(id).toLowerCase().includes(q)&&!(id==="hasebe_here"&&S.currentHasebeDeleted)&&!(id==="hasebe_trace"&&!S.duplicateVisible));let oldHit=S.oldIdFound&&oldOwnerId().toLowerCase().includes(q);return `<div class="pagehead"><div><h1>搜索</h1><div class="small">“${esc(searchTerm)}”</div></div></div><div class="search-results"><div class="result-section">帖子</div>${ps.length?ps.map(postRow).join(""):`<div class="small" style="padding:12px">没有相关帖子</div>`}<div class="result-section" style="margin-top:20px">用户</div>${ids.map(id=>`<div class="user-result" onclick="openProfile('${id}')">${userAvatarHTML(id,"sm")}<div><b>${esc(nameOf(id))}</b><div class="small">${esc(USERS[id].bio||"")}</div></div></div>`).join("")}${oldHit?`<div class="user-result" onclick="openOldLogin()"><div class="avatar sm">主</div><div><b>${esc(oldOwnerId())}</b><div class="small">历史用户</div></div></div>`:""}</div>`}
+function openOldLogin(){if(!S.oldIdFound)return;view="oldlogin";render()}
+function renderOldLogin(){return `<div class="old-login"><div class="small">用户空间</div><h2>${esc(oldOwnerId())}</h2><p>该空间需要登录后查看。</p><div class="field"><label>账号</label><input value="${esc(oldOwnerId())}" disabled></div><div class="field"><label>密码</label><input id="oldPass" autocomplete="off"></div><div id="oldPassErr" class="inline-error"></div><button class="btn primary" onclick="loginOldOwner()">登录</button></div>`}
+function loginOldOwner(){let v=document.getElementById("oldPass").value;if(!S.passwordKnown||v!==S.legacyPassword){document.getElementById("oldPassErr").textContent="账号或密码错误";return}S.oldOwnerLoggedIn=true;save();view="archive";render();setTimeout(revealArchive,200)}
+function renderArchive(){if(!S.oldOwnerLoggedIn)return renderOldLogin();return `<div class="archive"><div class="profile-head"><div class="avatar">${esc((S.nickname||"主")[0])}</div><div><div class="profile-name">${esc(oldOwnerId())}</div><div class="small">历史空间</div></div></div><div class="space-tabs"><b>空间</b><span>帖子</span><span>回复</span></div>
+<div class="archive-card"><span class="scheduled">定时发布</span><div class="entry-date">记录 01</div>外面从刚才开始一直有爆炸声。有人在论坛里说西侧结界被时间溯行军冲开了。我本来想出去看看，被长谷部按回房间。他说我现在唯一要做的就是待着。真讨厌，明明我是主人。</div>
+<div class="archive-card"><span class="scheduled">定时发布</span><div class="entry-date">记录 02</div>通讯断了好几次。门外一直有人跑过去，后来声音越来越少。长谷部出去了一趟，又很快回来，身上有血。他不肯告诉我是不是他的。问什么都只说“没事”。怎么可能没事。</div>
+<div class="archive-card"><span class="scheduled">定时发布</span><div class="entry-date">记录 03</div>好像已经到内侧了。长谷部一直站在我前面，怎么叫都不肯让开。我说至少让我也拿刀，他居然还在这种时候训我，说主人的命不是这样用的。外面很危险，可他背对着我站在那里，我突然觉得自己什么都做不了。</div>
+<div class="archive-card"><span class="scheduled">定时发布</span><div class="entry-date">遗言 / 预定公开</div><b>如果你们看到这条，我应该已经和长谷部都死掉了。</b><br><br>不要为了找我们再折回来。能撤出去的就撤，能保住本丸多少就保住多少。药研别因为没赶过来生气，歌仙也别替我收拾那些乱七八糟的东西了，鹤丸……算了，鹤丸你想笑就笑吧。<br><br>我不知道这条最后会被谁看到，所以就当是给所有人的。谢谢你们一直陪我到这里。对不起，最后还是让你们看这种东西。</div>
+<div class="archive-card"><span class="scheduled">定时发布</span><div class="entry-date">最后记录</div>声音已经很近了。长谷部还是站在我前面。<br><br><b>感觉要和长谷部一起死在这里了。这样好像也很好。至少不是我一个人。</b><br><br>他刚刚回头骂我不许说这种话。都这种时候了还在管我。<div class="comment"><b>へし切長谷部：</b>主人，您要好好活着。请不要擅自决定和我一起死。如果我不能继续陪着您，‘我’会继续陪着您的。</div></div>
+<div class="btnrow"><button class="btn primary" onclick="returnAfterTruth()">返回论坛</button></div></div>`}
+function revealArchive(){document.querySelectorAll(".archive-card").forEach((e,i)=>{e.style.opacity="0";e.style.transform="translateY(8px)";setTimeout(()=>{e.style.transition=".5s";e.style.opacity="1";e.style.transform="none"},i*420)})}
+function returnAfterTruth(){S.truthKnown=true;ensureDM("hasebe_trace");currentDM="hasebe_trace";view="messages";save();conversation("hasebe_trace",null,["主人。","都想起来了吗？"])}
+
+function openTool(){S.toolOpened=true;save();view="tool";render();setTimeout(toolNoise,100)}
+function renderTool(){return `<div class="tool"><div>AOE ARCHIVE UTILITY / build 0.19</div><h2>异常用户归档程序</h2><div class="field"><label>USER IDENTITY</label><input id="toolId" autocomplete="off"></div><div class="field"><label>RESIDUAL CAUSE</label><input id="toolCause" autocomplete="off"></div><div class="field"><label>ADMIN PASSWORD</label><input id="toolPass" autocomplete="off"></div><div id="console" class="console">[init] reading forum archive…
+[ok] historical index mounted
+[warn] one active session has no valid physical endpoint</div><div class="btnrow"><button class="btn dark" onclick="verifyTool()">执行</button><button class="btn" onclick="go('home')">关闭程序</button></div></div>`}
+function toolNoise(){let c=document.getElementById("console");if(!c)return;let a=["scan /users/archive","read session token","unexpected heartbeat","owner = へし切長谷部","status = ONLINE","status = ONLINE","status = ONLINE"];let i=0,t=setInterval(()=>{if(!document.getElementById("console")){clearInterval(t);return}c.textContent+="\n["+String(i).padStart(2,"0")+"] "+a[i%a.length];c.scrollTop=c.scrollHeight;if(++i>10)clearInterval(t)},180)}
+function verifyTool(){let id=(document.getElementById("toolId").value||"").trim(),cause=(document.getElementById("toolCause").value||"").trim(),pass=(document.getElementById("toolPass").value||"").replace(/\D/g,"");let okId=id==="へし切長谷部"||id==="长谷部"||id==="長谷部",okCause=cause==="主人",okPass=pass===birthdayCode();if(!(okId&&okCause&&okPass)){let c=document.getElementById("console");c.textContent+="\n[ERROR] verification mismatch\n[ERROR] archive target changed\n[target] "+S.nickname;setTimeout(()=>fadeToEnding("hidden"),1500);return}let c=document.getElementById("console");c.textContent+="\n[ok] verified\n[archive] waiting for remote acknowledgement…";setTimeout(startCleanupBlackout,900)}
+function startCleanupBlackout(){document.getElementById("overlay").innerHTML=`<div class="black-stage"><div>CONNECTION LOST</div></div>`;setTimeout(()=>{document.getElementById("overlay").innerHTML="";S.cleanupStep=1;ensureDM("hasebe_trace");currentDM="hasebe_trace";view="messages";save();conversation("hasebe_trace",null,["……主人。","主人，您真的决定要让我从这里离开吗？"])},1600)}
+function cleanupQuestion2(){S.cleanupStep=2;save();conversation("hasebe_trace","……是。",["即使之后再也看不到我。","您也要继续吗？"])}
+
+function finalReplyButtons(){if(dmBusy)return "";return `<div class="replies"><button onclick="beginFinalTruth('想起来了。')">想起来了。</button><button onclick="beginFinalTruth('还没有全部想起来，但我知道你是谁。')">还没有全部想起来，但我知道你是谁。</button></div>`}
+const wrappedDmReplies=dmReplies;dmReplies=function(id){if(dmBusy)return "";if(id==="hasebe_trace"&&S.truthKnown){let arr=S.dms[id]||[],last=arr[arr.length-1]?.text||"";if(last==="都想起来了吗？")return finalReplyButtons();if(last.includes("最后还能再回答我一次吗"))return `<div class="replies"><button onclick="finalFarewell('我不想让你走。')">我不想让你走。</button><button onclick="finalFarewell('谢谢你一直等我。')">谢谢你一直等我。</button></div>`}return wrappedDmReplies(id)};
+function beginFinalTruth(text){
+  startFinalBgm();
+  runDMSequence("hasebe_trace",[
+ {from:"me",text,delay:0,pause:650},
+
+  {from:"them",text:"……是吗。",delay:950,pause:1300},
+  {from:"them",text:"那我也该把一直没能亲口告诉您的事情，说完了。",delay:900,pause:1700},
+
+  // ===== 真相 =====
+
+  {from:"them",text:"那天您留下那些定时发布的内容以后，很快就失去了意识。",delay:950,pause:1050},
+  {from:"them",text:"我确认您还活着的时候，第一次觉得，幸好。",delay:1050,pause:1500},
+  {from:"them",text:"真的……幸好。",delay:1300,pause:1900},
+
+  {from:"them",text:"只是我知道，自己等不到您醒来了。",delay:1150,pause:1800},
+
+  {from:"them",text:"所以我去找了这座本丸里的另一个へし切長谷部。",delay:1050,pause:1350},
+  {from:"them",text:"我告诉他，主人会醒过来。",delay:850,pause:850},
+  {from:"them",text:"只是醒来以后，也许会忘记很多事情。",delay:900,pause:850},
+  {from:"them",text:"也许……不会再记得我。",delay:1150,pause:1550},
+
+  {from:"them",text:"我请他到您身边去。",delay:900,pause:1000},
+  {from:"them",text:"不是代替我。",delay:1150,pause:1200},
+  {from:"them",text:"只是作为へし切長谷部，继续照顾您，做我已经来不及做完的事情。",delay:1000,pause:1650},
+
+  {from:"them",text:"他答应了。",delay:1050,pause:1300},
+  {from:"them",text:"所以主人醒来以后认识的那个长谷部，没有骗您。",delay:950,pause:1050},
+  {from:"them",text:"他也是长谷部。",delay:1250,pause:1900},
+
+  {from:"them",text:"后来，我碎刀了。",delay:1450,pause:2100},
+  {from:"them",text:"本来故事应该就停在那里。",delay:1100,pause:1350},
+
+  // ===== 为什么还留在论坛 =====
+
+  {from:"them",text:"可不知道为什么，我的一点意识留在了论坛里。",delay:1000,pause:1100},
+  {from:"them",text:"最开始，我什么也做不了。",delay:900,pause:900},
+  {from:"them",text:"只能看着那些旧帖子，看着日期停在那里。",delay:900,pause:1000},
+
+  {from:"them",text:"后来偶尔能碰到一点论坛里的东西。",delay:950,pause:950},
+  {from:"them",text:"再后来，终于能留下一个字，发出一句话。",delay:950,pause:1200},
+
+  {from:"them",text:"我以前兼任这里的管理员。",delay:950,pause:900},
+  {from:"them",text:"所以那些突然被封掉的帖子，也是我做的。",delay:1000,pause:1200},
+  {from:"them",text:"对不起。",delay:1250,pause:1550},
+  {from:"them",text:"我只是……不想让刚醒来的主人，一下子看到那么多自己已经忘掉的事情。",delay:1000,pause:1750},
+
+  {from:"them",text:"我本来想，就这样待一会儿。",delay:900,pause:1000},
+  {from:"them",text:"确认主人还活着。",delay:900,pause:850},
+  {from:"them",text:"确认您平安。",delay:900,pause:950},
+  {from:"them",text:"那就够了。",delay:1100,pause:1600},
+
+  {from:"them",text:"然后有一天，我看见主人的新账号亮起来了。",delay:1250,pause:2100},
+  {from:"them",text:"……那一天，我真的特别高兴。",delay:1500,pause:2700},
+
+  // ===== 重新见到主人以后 =====
+
+  {from:"them",text:"我本来只想确认您还活着。",delay:1000,pause:1000},
+  {from:"them",text:"看一眼就够了。",delay:1000,pause:1250},
+
+  {from:"them",text:"可是人一旦真的重新见到了，就会变得很贪心。",delay:1200,pause:1800},
+
+  {from:"them",text:"我开始想知道您今天有没有好好吃饭。",delay:900,pause:800},
+  {from:"them",text:"有没有按时睡觉。",delay:850,pause:800},
+  {from:"them",text:"有没有又偷偷熬夜。",delay:900,pause:1050},
+
+
+  {from:"them",text:"那时候我还能管着您。",delay:1050,pause:1300},
+  {from:"them",text:"现在……居然还是忍不住想管。",delay:1050,pause:1700},
+
+  {from:"them",text:"还想再听您多叫我几次长谷部。",delay:1200,pause:1900},
+
+  // ===== 御守 / 留不住的东西 =====
+
+  {from:"them",text:"我一直觉得，只要我还记得，就算不在主人身边，也算留下了一点东西。",delay:1050,pause:1600},
+  {from:"them",text:"可是现在，连这些记忆都在一点点变淡。",delay:1200,pause:1900},
+
+  {from:"them",text:"……说起来，主人以前给我的东西，我也一直记得。",delay:1100,pause:1450},
+  {from:"them",text:"那个御守，最后还是用掉了。",delay:1250,pause:1750},
+  {from:"them",text:"我知道御守本来就是为了那种时候准备的。",delay:900,pause:950},
+  {from:"them",text:"可真到了留不住它的时候，我还是很难过。",delay:1100,pause:1700},
+  {from:"them",text:"主人给我的东西，我到底没能一直好好留着。",delay:1100,pause:2000},
+
+  {from:"them",text:"这一次好像也是。",delay:1250,pause:2100},
+
+  // ===== 到了要走的时候 =====
+
+  {from:"them",text:"我能留在这里的东西，已经越来越少了。",delay:1250,pause:1850},
+  {from:"them",text:"我知道，该到离开的时候了。",delay:1400,pause:2400},
+
+  {from:"them",text:"真不想走啊。",delay:1850,pause:3400},
+
+  {from:"them",text:"明明一开始只想着，确认主人平安就够了。",delay:1250,pause:1750},
+  {from:"them",text:"现在却觉得，怎么都不够。",delay:1200,pause:1800},
+
+  {from:"them",text:"还想再陪您久一点。",delay:1100,pause:1300},
+  {from:"them",text:"想看看主人明天吃什么。",delay:900,pause:900},
+  {from:"them",text:"想知道您今晚是不是又要熬夜。",delay:900,pause:950},
+  {from:"them",text:"想继续做您的近侍。",delay:1000,pause:1100},
+  {from:"them",text:"继续管您那些怎么也改不掉的小毛病。",delay:1000,pause:1750},
+
+  {from:"them",text:"如果真的可以选，我当然想留下来。",delay:1450,pause:2400},
+
+  {from:"them",text:"可是这一次，没有办法了。",delay:1550,pause:2800},
+
+  // ===== 不要哭：由现在自然带出过去 =====
+
+  {from:"them",text:"主人。",delay:1750,pause:2200},
+  {from:"them",text:"您可不要因为这种事又哭啊。",delay:1450,pause:1900},
+
+  {from:"them",text:"您以前就特别爱哭。",delay:1000,pause:1050},
+  {from:"them",text:"还总是不肯承认。",delay:900,pause:1050},
+  {from:"them",text:"躲在被子里看小说都会哭得第二天眼睛肿起来。",delay:950,pause:1300},
+
+  {from:"them",text:"那时候我至少还能给您拿条冷毛巾。",delay:1100,pause:1600},
+  {from:"them",text:"还能站在旁边，等主人一边说自己没哭，一边偷偷擦眼睛。",delay:1000,pause:1700},
+
+  {from:"them",text:"现在可没办法了。",delay:1300,pause:2300},
+
+  {from:"them",text:"所以这次……别哭，好吗。",delay:1500,pause:2600},
+
+  {from:"them",text:"……",delay:1700,pause:2200},
+
+  {from:"them",text:"说这种话，好像我自己也没什么资格。",delay:1200,pause:1750},
+  {from:"them",text:"我现在也很难受。",delay:1350,pause:2300},
+
+  // ===== 对“遇见主人”的怀念，只留最必要的几句 =====
+
+  {from:"them",text:"能遇见主人，我一直都觉得是件很好的事。",delay:1400,pause:2100},
+
+  {from:"them",text:"第一次见您的时候也是。",delay:1100,pause:1350},
+  {from:"them",text:"那时候您明明紧张得要命，还非要在我面前装得很镇定。",delay:950,pause:1250},
+  {from:"them",text:"交代近侍的事情说得一板一眼，最后反而是主人自己忘了东西。",delay:950,pause:1550},
+
+  {from:"them",text:"现在想起来，真的很怀念。",delay:1300,pause:2100},
+
+  {from:"them",text:"第一次能遇见您，很好。",delay:1350,pause:1900},
+  {from:"them",text:"这一次还能重新见到您，也很好。",delay:1450,pause:2400},
+
+  {from:"them",text:"我原本以为，一切结束以后，就再也没有机会和主人说话了。",delay:1150,pause:1750},
+  {from:"them",text:"所以能等到您回来，已经是我没有想过的幸运。",delay:1250,pause:2200},
+
+  {from:"them",text:"我是真的很高兴。",delay:1450,pause:2200},
+  {from:"them",text:"也是真的很幸福。",delay:1500,pause:2500},
+
+  // ===== 最后的舍不得 =====
+
+  {from:"them",text:"只是……",delay:1700,pause:1900},
+  {from:"them",text:"人好像就是这样。",delay:1100,pause:1450},
+  {from:"them",text:"越幸福，就越舍不得结束。",delay:1350,pause:2400},
+
+  {from:"them",text:"主人啊。",delay:1900,pause:3000},
+
+  {from:"them",text:"我真的很舍不得您。",delay:1800,pause:3600},
+
+  {from:"them",text:"真想继续留在这里。",delay:1500,pause:2100},
+  {from:"them",text:"哪怕只是继续看着主人的账号每天亮起来，也好。",delay:1150,pause:1800},
+  {from:"them",text:"偶尔收到一句主人发来的话，也好。",delay:1100,pause:1800},
+
+  {from:"them",text:"可是……好像真的到这里了。",delay:1500,pause:2900},
+
+  {from:"them",text:"对不起。",delay:1600,pause:2300},
+  {from:"them",text:"最后还要让您听见这种任性的话。",delay:1200,pause:1900},
+
+  {from:"them",text:"不过主人，请不要因为我，对现在陪在您身边的长谷部觉得歉疚。",delay:1050,pause:1550},
+  {from:"them",text:"请好好看着他。",delay:1000,pause:1050},
+  {from:"them",text:"也请让他好好看着您。",delay:1000,pause:1750},
+
+  {from:"them",text:"要好好吃饭。",delay:1050,pause:950},
+  {from:"them",text:"早点睡觉。",delay:950,pause:950},
+
+  {from:"them",text:"……这些话，以后就轮不到我来说了。",delay:1400,pause:2800},
+
+  {from:"them",text:"主人。",delay:1750,pause:2400},
+  {from:"them",text:"最后还能再回答我一次吗？",delay:1650,pause:1100}
+])}
+function finalFarewell(text){let steps=[{from:"me",text,delay:0,pause:850}];if(text==="我不想让你走。"){steps.push(
+ {from:"them",text:"……我知道。",delay:1400,pause:1700},
+ {from:"them",text:"听到主人这样说，我好像又要贪心了。",delay:1100,pause:1500},
+ {from:"them",text:"我也不想走。",delay:1500,pause:2800},
+ {from:"them",text:"如果还有明天，我大概还会照常去叫您起床。",delay:1100,pause:1300},
+ {from:"them",text:"然后听您抱怨我管得太多。",delay:1000,pause:1700},
+ {from:"them",text:"……可惜，没有那个明天了。",delay:1500,pause:2800},
+ {from:"them",text:"所以这一次，就让我好好和您告别吧。",delay:1200,pause:1900}
+ )}else{steps.push(
+ {from:"them",text:"……嗯。",delay:1450,pause:1600},
+ {from:"them",text:"我等到了。",delay:1350,pause:2200},
+ {from:"them",text:"所以其实，也没有觉得等得太久。",delay:1000,pause:1400},
+ {from:"them",text:"谢谢主人回来。",delay:1250,pause:1900},
+ {from:"them",text:"也谢谢您最后还是认出了我。",delay:1100,pause:2100}
+ )}steps.push(
+ {from:"them",text:"那么，主人。",delay:1500,pause:2000},
+ {from:"them",text:"这一次，真的要告别了。",delay:1500,pause:2600},
+ {from:"them",text:"请您好好活下去。",delay:1400,pause:2400},
+ {from:"them",text:"别再总让我担心了。",delay:1100,pause:1800},
+ {from:"them",text:"……欢迎回来，主人。",delay:1800,pause:3200}
+ );
+runDMSequence("hasebe_trace",steps,()=>{
+  fadeOutFinalBgm(5000);
+
+  setTimeout(()=>{
+    fadeToEnding("true");
+  },1800);
+});}
+function fadeToEnding(x,ms=2800){if(document.getElementById("endingCurtain"))return;let e=document.createElement("div");e.id="endingCurtain";e.className="ending-curtain";document.body.appendChild(e);requestAnimationFrame(()=>requestAnimationFrame(()=>e.classList.add("show")));setTimeout(()=>{endGame(x);e.remove()},ms)}
+function endGame(x){S.ending=x;save();render()}
+function renderEnding(){let d={peace:["安息","账号归档完成。论坛在线人数终于和列表一致。","最后一次活动停在你按下确认的那一刻。"],ignore:["不再追问","你关闭了程序。","那个账号仍旧偶尔显示在线。没有人再提起这件事。"],hidden:["神隐","页面重新加载时，你的账号不在在线列表里。","右上角的在线人数，仍旧比列表多一个。"],true:["欢迎回来，主人。","论坛里的那个账号终于离线。","“还能再见吗。”"]}[S.ending];document.getElementById("app").innerHTML=`<div class="ending"><div class="ending-inner"><div class="small">本丸论坛</div><h1>${d[0]}</h1><p>${d[1]}</p><p>${d[2]}</p><button class="btn" onclick="resetGame()">重新开始</button></div></div>`}
+
+function modal(title,body,closable=true){document.getElementById("overlay").innerHTML=`<div class="modal"><div class="modal-card"><h2>${title}</h2>${body}${closable?`<div class="btnrow"><button class="btn" onclick="closeModal()">关闭</button></div>`:""}</div></div>`}
+function closeModal(){document.getElementById("overlay").innerHTML=""}
+function resetAsk(){modal("退出账号",`<p>退出并清除当前浏览器中的论坛记录？</p><div class="btnrow"><button class="btn dark" onclick="closeModal();resetGame()">清除并退出</button></div>`,true)}
+function resetGame(){localStorage.removeItem("honmaru_forum_v7");S=clone(DEFAULT_STATE);view="home";currentPost=null;currentProfile=null;currentDM=null;searchTerm="";currentPostFresh=false;render()}
+
+render();
+</script>
+</body>
+</html>
