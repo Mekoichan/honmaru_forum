@@ -38,6 +38,8 @@ a{color:inherit}.small{font-size:12px;color:var(--muted)}
 .tool{min-height:690px;padding:22px;background:#111;color:#c9d0c8;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.tool .field input{background:#191919;border-color:#333;color:#ddd}.console{height:210px;overflow:auto;border:1px solid #2c2c2c;background:#080808;padding:10px;font-size:11px;line-height:1.55;color:#97a093;white-space:pre-wrap}.tool a{color:#b8c8b2}.post-inline-link{color:#1a66c9;text-decoration:underline;cursor:pointer;font-weight:600}.post-inline-link:hover{color:#0f4d9b}.black-stage{position:fixed;inset:0;z-index:160;background:#000;display:grid;place-items:center;color:#777;font-size:12px;letter-spacing:.18em}
 .modal{position:fixed;inset:0;z-index:100;background:rgba(20,18,17,.74);display:grid;place-items:center;padding:18px}.modal-card{width:min(610px,100%);background:var(--paper);border:1px solid #70645a;box-shadow:0 24px 80px rgba(0,0,0,.35);padding:23px;border-radius:5px}.modal-card h2{margin:0 0 10px}.modal-card p{line-height:1.75}
 .ending{min-height:100vh;display:grid;place-items:center;background:#000;color:#eee;padding:25px}.ending-inner{max-width:650px;text-align:center}.ending h1{font-weight:500;letter-spacing:.16em}.ending p{line-height:2;color:#c8c0b7}
+.ending.wake-ending{background:#f6f1e8;color:#2e2925}.ending.wake-ending p{color:#625a52}.ending.wake-ending .small{color:#8b8178}
+.wake-curtain{position:fixed;inset:0;z-index:330;background:#fffdf8;opacity:0;pointer-events:none;transition:opacity 3.2s ease}.wake-curtain.show{opacity:1}
 
 .like-btn{
   display:inline-flex;
@@ -104,7 +106,8 @@ const DEFAULT_STATE={
  duplicateVisible:false,currentHasebeDeleted:false,oldProfileUnlocked:false,horrorComplete:false,horrorRecovered:false,
  askedSwords:[],identityChoice:null,hiddenHistoryOpen:false,oldIdFound:false,passwordLead:false,
  talkRound:0,talkFailed:false,passwordKnown:false,legacyPassword:"",oldOwnerLoggedIn:false,truthKnown:false,
- unread:{},dms:{},ending:null,treeChanged:false,toolOpened:false,usedActions:[],aoeHints:[],cleanupStep:0,talkUsedOptions:{},bannedPosts:[],mirrorPostPendingBan:false,mirrorPostSteps:0,meltSeen:false
+ unread:{},dms:{},ending:null,treeChanged:false,toolOpened:false,usedActions:[],aoeHints:[],cleanupStep:0,talkUsedOptions:{},bannedPosts:[],mirrorPostPendingBan:false,mirrorPostSteps:0,meltSeen:false,
+ wakeSignalSent:false,wakeSignalRead:false,wakeForum:false
 };
 let S=load();
 let view="home",currentPost=null,currentProfile=null,currentDM=null,searchTerm="";
@@ -234,6 +237,23 @@ const POSTS=[
 
 ];
 
+const WAKE_POSTS=[
+ {id:"W001",title:"大将，听得见吗",author:"yagen",board:"紧急",when:"刚刚",body:"大将。如果你还能看见这里，就别再往更深的地方睡了。脉搏一直都在，你和长谷部都还活着。听见我们的话，就回来。",replies:[["kasen","主人，醒来吧。大家都在这里。"],["midare","主人！快回来！"]]},
+ {id:"W002",title:"主人，睁开眼睛",author:"midare",board:"日常",when:"刚刚",body:"主人！别再睡啦！我还有好多东西没来得及给主人看呢。你要是听得到，就快点睁开眼睛，好不好？",replies:[["gokotai","主、主人……小老虎们也都在等您。"],["yagen","继续叫。大将能听见的。"]]},
+ {id:"W003",title:"睡得太久可一点也不风雅",author:"kasen",board:"杂谈",when:"刚刚",body:"主人，庭里的花已经开了。等您醒来，我再重新插一瓶放到房里。所以别再留在那个没有季节的地方了。回来吧。",replies:[["tsuru","这次我赞成歌仙。"],["sayo","外面有风。主人应该回来看看。"]]},
+ {id:"W004",title:"喂，这个惊吓一点也不好笑啊",author:"tsuru",board:"杂谈",when:"刚刚",body:"主人，这次可真的把所有人都吓到了。要是你还打算继续睡，我以后拿什么惊吓你？差不多该反过来吓我们一跳，睁开眼吧。",replies:[["yamanba","别说废话。继续叫主人。"],["tsuru","我这不是正在叫吗。"]]},
+ {id:"W005",title:"主人，再不起床我就念账本了",author:"hakata",board:"日常",when:"刚刚",body:"主人！我可先说好了，再不醒我就坐在旁边从今天的采购账念到远征收益表！这可比什么噩梦都吓人吧？所以快点醒来啦。",replies:[["yagen","这个办法说不定真的有效。"],["hakata","对吧！"]]},
+ {id:"W006",title:"主人，回来吧",author:"sayo",board:"杂谈",when:"刚刚",body:"大家都在这里。没有人把您丢下。长谷部也还在。所以……不要一个人留在那里。",replies:[["kasen","嗯。没有人离开。"],["midare","主人不是一个人。"]]},
+ {id:"W007",title:"主、主人，小老虎们一直在等您",author:"gokotai",board:"日常",when:"刚刚",body:"刚才有一只一直趴在您的被子旁边。它好像也知道主人还没醒。请、请快点回来吧。等您醒了，我再让它给主人摸摸头。",replies:[["midare","五虎退别哭啦，主人会醒的。"],["gokotai","嗯……一定会的。"]]},
+ {id:"W008",title:"醒来以后给你做点好吃的",author:"shokudaikiri",board:"茶水间",when:"刚刚",body:"主人，厨房这边已经准备好了。等你醒来，不管是粥还是甜一点的东西都可以慢慢来。所以先睁开眼睛，好吗？",replies:[["kasen","第一顿还是清淡些。"],["shokudaikiri","当然。先让主人醒来再说。"]]},
+ {id:"W009",title:"……主人，别让大家等太久",author:"yamanba",board:"日常",when:"刚刚",body:"我不知道这样叫有没有用。但既然药研说你听得见，那就听好了。大家都在等你。……我也是。回来。",replies:[["hori","兄弟说得对。主人，请回来。"]]},
+ {id:"W010",title:"主人，如果听得到就顺着声音回来",author:"hori",board:"求助",when:"刚刚",body:"现实里的通讯没有断。我们一直都在这里说话。如果这个论坛还能把声音传给主人，那就别再相信里面那些已经结束的记录了。顺着我们的声音回来。",replies:[["yagen","对。现实还没有结束。"],["aoe","有时候出口一直都在，只是人不愿意回头看呢。"]]},
+ {id:"W011",title:"这里不是主人该久留的地方哦",author:"aoe",board:"杂谈",when:"刚刚",body:"不管你现在看到的论坛有多像真的，它都不是你应该继续待下去的地方。既然已经能看到我们的字，就说明那边开始松动了。主人，睁开眼睛吧。",replies:[["sayo","回来。"],["tsuru","外面可比这里热闹多了。"]]},
+ {id:"W012",title:"……醒过来",author:"kuri",board:"日常",when:"刚刚",body:"大家都在等。长谷部也还活着。够了。醒过来。",replies:[["midare","大俱利伽罗居然也发帖了！"],["kuri","吵死了。"]]}
+];
+
+function allForumPosts(){return POSTS.concat(WAKE_POSTS)}
+
 const EXTRA_REPLIES={
  P017:[["yagen","我这边看到的在线名单也少一个。先别一直刷新。"],["tsuru","数字比人多一个，听起来倒像个不错的惊吓。可惜这次不像我做的。"],["hakata","鹤丸殿你最好真的没做。"],["admin","已保存前台与后台会话快照。"]],
  P013:[["yagen","别为了这个一直熬夜算，大将还在恢复。"],["hakata","我只是看不惯对不上的数！"],["kasen","既然管理员已经在查，就先停手。"],["sayo","……一直都是一个。"]],
@@ -274,6 +294,7 @@ function makeLegacyPassword(){let b=birthdayCode();return "hb-"+(b.slice(4)||"00
 function userAvatarHTML(id,cls=""){return `<div class="avatar ${id.startsWith("hasebe")?"hasebe":""} ${cls}">${esc(avatarOf(id))}</div>`}
 
 function availablePosts(){
+ if(S.wakeForum)return WAKE_POSTS;
  return POSTS.filter(p=>{
   if(!p.requires)return true;
   if(p.requires==="afterDelete")return S.currentHasebeDeleted;
@@ -333,6 +354,9 @@ function go(v){searchTerm="";view=v;currentPost=null;currentPostFresh=false;if(v
 
 function renderHome(){
  let ps=availablePosts();
+ if(S.wakeForum){
+  return `<div class="pagehead"><div><h1>本丸论坛</h1><div class="small">……主人，听得见吗？</div></div><div class="filters"><span class="filter">刚刚</span><span class="filter">全部</span></div></div><div class="post-list">${ps.map(postRow).join("")}</div>`
+ }
  if(S.identityChoice==="ghost"){
   let idx=ps.findIndex(p=>p.id==="P019");
   if(idx>0){
@@ -343,8 +367,8 @@ function renderHome(){
  return `<div class="pagehead"><div><h1>本丸论坛</h1><div class="small">今天也请文明使用论坛。</div></div><div class="filters"><span class="filter">全部</span><span class="filter">杂谈</span><span class="filter">旧帖</span></div></div><div class="post-list">${ps.map(postRow).join("")}</div>`
 }
 function postRow(p){let read=S.reads.includes(p.id),banned=(S.bannedPosts||[]).includes(p.id);return `<div class="post-row" style="${banned?'opacity:.58':''}"><div onclick="${banned?'void(0)':`openProfile('${p.author}')`}">${p.anon?'<div class="avatar">匿</div>':userAvatarHTML(p.author)}</div><div><div class="post-title" onclick="openPost('${p.id}')">${banned?'【已封禁】 ':''}${p.title}${!read&&!banned?`<span class="newmark">NEW</span>`:""}</div><div class="post-meta">${banned?'该主题已被管理员封禁':`${p.anon?'匿名':esc(nameOf(p.author))} · ${p.when} · 回复 ${p.replies.length}`}</div></div><span class="board">${banned?'封禁':p.board}</span></div>`}
-function openPost(id){let p=POSTS.find(x=>x.id===id);if(!p||!availablePosts().some(x=>x.id===id))return;if(S.mirrorPostPendingBan&&id!=="P044"){S.mirrorPostSteps=(S.mirrorPostSteps||0)+1;if(S.mirrorPostSteps>=2){S.bannedPosts=S.bannedPosts||[];if(!S.bannedPosts.includes("P044"))S.bannedPosts.push("P044");S.mirrorPostPendingBan=false}}let alreadyBanned=(S.bannedPosts||[]).includes(id);currentPostFresh=!alreadyBanned;currentPost=id;view="post";if(!S.reads.includes(id)){S.reads.push(id);S.viewCount++;if(S.viewCount>=4&&!S.duplicateVisible){S.duplicateVisible=true;ensureDM("hasebe_trace");unread("hasebe_trace")}}if(p.autoBan&&!alreadyBanned){S.bannedPosts=S.bannedPosts||[];S.bannedPosts.push(id)}if(id==="P044"&&!alreadyBanned){S.mirrorPostPendingBan=true;S.mirrorPostSteps=0}if(id==="P015")S.oldIdFound=true;if(id==="P018"&&!S.treeChanged)setTimeout(treeMutation,1200);save();render();if(p.melt&&!S.meltSeen)setTimeout(startMeltPost,380)}
-function renderPost(){let p=POSTS.find(x=>x.id===currentPost);if(!p)return renderHome();if((S.bannedPosts||[]).includes(p.id)&&!currentPostFresh)return `<div class="post-view"><button class="back" onclick="go('home')">← 返回</button><div style="padding:70px 20px;text-align:center"><div style="font-size:20px;font-weight:700;margin-bottom:12px">该主题已被封禁</div><div class="small">管理员已关闭此主题，原内容无法继续查看。</div></div></div>`;let replies=p.replies.map(x=>[...x]);if(p.id==="P009"&&S.horrorComplete)replies.push(["hasebe_trace","主人。"]);if(p.id==="P018"&&S.treeChanged)replies[1]=["hasebe_trace","主人が忘れても、俺は忘れません。だから、どうか。"];let inner=`<button class="back" onclick="go('home')">← 返回</button><h1 class="thread-title">${p.title}</h1><div class="thread-sub">${p.anon?"匿名":esc(nameOf(p.author))} · ${p.when}</div>${floor(p.author,p.body,1,p.anon)}${replies.map((r,i)=>floor(r[0],String(r[1]).replace("<OLDID>",`<button style="border:0;background:transparent;color:#6d2530;text-decoration:underline;padding:0" onclick="openOldLogin()">${esc(oldOwnerId())}</button>`),i+2,r[0]==="anonymous")).join("")}${p.closedText?`<div class="thread-closed">${esc(p.closedText)}</div>`:""}<div class="btnrow"><button class="btn" onclick="toggleFav('${p.id}')">${S.favorites.includes(p.id)?"取消收藏":"收藏"}</button></div>`;if(p.melt)return `<div id="meltThread" class="post-view melt-thread">${inner}<div id="meltGhostLayer" class="melt-ghost-layer"></div></div>`;return `<div class="post-view">${inner}</div>`}
+function openPost(id){let p=allForumPosts().find(x=>x.id===id);if(!p||!availablePosts().some(x=>x.id===id))return;if(S.mirrorPostPendingBan&&id!=="P044"){S.mirrorPostSteps=(S.mirrorPostSteps||0)+1;if(S.mirrorPostSteps>=2){S.bannedPosts=S.bannedPosts||[];if(!S.bannedPosts.includes("P044"))S.bannedPosts.push("P044");S.mirrorPostPendingBan=false}}let alreadyBanned=(S.bannedPosts||[]).includes(id);currentPostFresh=!alreadyBanned;currentPost=id;view="post";if(!S.reads.includes(id)){S.reads.push(id);S.viewCount++;if(S.viewCount>=4&&!S.duplicateVisible){S.duplicateVisible=true;ensureDM("hasebe_trace");unread("hasebe_trace")}}if(p.autoBan&&!alreadyBanned){S.bannedPosts=S.bannedPosts||[];S.bannedPosts.push(id)}if(id==="P044"&&!alreadyBanned){S.mirrorPostPendingBan=true;S.mirrorPostSteps=0}if(id==="P015")S.oldIdFound=true;if(id==="P018"&&!S.treeChanged)setTimeout(treeMutation,1200);save();render();if(p.melt&&!S.meltSeen)setTimeout(startMeltPost,380)}
+function renderPost(){let p=allForumPosts().find(x=>x.id===currentPost);if(!p)return renderHome();if((S.bannedPosts||[]).includes(p.id)&&!currentPostFresh)return `<div class="post-view"><button class="back" onclick="go('home')">← 返回</button><div style="padding:70px 20px;text-align:center"><div style="font-size:20px;font-weight:700;margin-bottom:12px">该主题已被封禁</div><div class="small">管理员已关闭此主题，原内容无法继续查看。</div></div></div>`;let replies=p.replies.map(x=>[...x]);if(p.id==="P009"&&S.horrorComplete)replies.push(["hasebe_trace","主人。"]);if(p.id==="P018"&&S.treeChanged)replies[1]=["hasebe_trace","主人が忘れても、俺は忘れません。だから、どうか。"];let inner=`<button class="back" onclick="go('home')">← 返回</button><h1 class="thread-title">${p.title}</h1><div class="thread-sub">${p.anon?"匿名":esc(nameOf(p.author))} · ${p.when}</div>${floor(p.author,p.body,1,p.anon)}${replies.map((r,i)=>floor(r[0],String(r[1]).replace("<OLDID>",`<button style="border:0;background:transparent;color:#6d2530;text-decoration:underline;padding:0" onclick="openOldLogin()">${esc(oldOwnerId())}</button>`),i+2,r[0]==="anonymous")).join("")}${p.closedText?`<div class="thread-closed">${esc(p.closedText)}</div>`:""}<div class="btnrow"><button class="btn" onclick="toggleFav('${p.id}')">${S.favorites.includes(p.id)?"取消收藏":"收藏"}</button></div>`;if(p.melt)return `<div id="meltThread" class="post-view melt-thread">${inner}<div id="meltGhostLayer" class="melt-ghost-layer"></div></div>`;return `<div class="post-view">${inner}</div>`}
 function floor(uid,body,no,anon=false){
   let isAnon = anon || uid === "anonymous";
   let label = isAnon ? "匿名" : nameOf(uid);
@@ -421,7 +445,20 @@ function horrorScroll(){let h=document.getElementById("horrorSpace");if(!h||S.ho
 function finishHorrorRecovery(){horrorBottomTimer=null;if(S.horrorRecovered)return;S.horrorComplete=true;S.horrorRecovered=true;ensureDM("hasebe_trace");let a=S.dms.hasebe_trace;if(!a.some(m=>m.text==="……主人。"))a.push({from:"them",text:"……主人。"});unread("hasebe_trace");save();cleanupHorror();render();setTimeout(()=>window.scrollTo(0,0),0)}
 function cleanupHorror(){if(horrorBottomTimer){clearTimeout(horrorBottomTimer);horrorBottomTimer=null}if(horrorScrollBound){window.removeEventListener("scroll",horrorScroll);horrorScrollBound=false}document.documentElement.classList.remove("terror-max");["redVeil","darkVeil","bloodFlood"].forEach(id=>{let e=document.getElementById(id);if(e){e.style.display="none";e.style.opacity="0"}})}
 
-function openDM(id){if(id==="hasebe_here"&&S.currentHasebeDeleted)return;if(id==="hasebe_trace"&&!S.duplicateVisible)return;ensureDM(id);currentDM=id;S.unread[id]=0;save();view="messages";render()}
+function openDM(id){
+ if(id==="hasebe_here"&&S.currentHasebeDeleted)return;
+ if(id==="hasebe_trace"&&!S.duplicateVisible)return;
+ ensureDM(id);
+ currentDM=id;
+ if(id==="yagen"&&S.wakeSignalSent&&!S.wakeSignalRead){
+  S.wakeSignalRead=true;
+  S.wakeForum=true;
+ }
+ S.unread[id]=0;
+ save();
+ view="messages";
+ render();
+}
 function dmIds(){let ids=Object.keys(S.dms);if(S.currentHasebeDeleted)ids=ids.filter(x=>x!=="hasebe_here");return ids}
 function renderMessages(){let ids=dmIds();if(!ids.length){ensureDM("hasebe_here");ids=dmIds()}if(!currentDM||!ids.includes(currentDM))currentDM=ids[0];let msgs=S.dms[currentDM]||[];return `<div class="messages"><div class="dm-list">${ids.map(id=>{let a=S.dms[id],last=a[a.length-1];return `<div class="dm-row ${id===currentDM?"active":""}" onclick="openDM('${id}')"><div class="dm-name">${esc(nameOf(id))}${S.unread[id]?` <span class="badge">${S.unread[id]}</span>`:""}</div><div class="dm-preview">${esc(last?.text||"")}</div></div>`}).join("")}</div><div class="chat"><div class="chat-head" onclick="openProfile('${currentDM}')">${userAvatarHTML(currentDM,"sm")}<b>${esc(nameOf(currentDM))}</b></div><div id="chatlog" class="chat-log">${msgs.map(m=>m.from==="system"?`<div class="sys">${esc(m.text)}</div>`:`<div class="bubble-row ${m.from==="me"?"me":""}">${m.from!=="me"?userAvatarHTML(currentDM,"sm"):""}<div class="bubble">${esc(m.text)}</div></div>`).join("")}</div><div class="typing" id="typing"></div>${dmReplies(currentDM)}</div></div>`}
 function dmReplies(id){
@@ -608,8 +645,37 @@ function verifyTool(){let id=(document.getElementById("toolId").value||"").trim(
 function startCleanupBlackout(){document.getElementById("overlay").innerHTML=`<div class="black-stage"><div>CONNECTION LOST</div></div>`;setTimeout(()=>{document.getElementById("overlay").innerHTML="";S.cleanupStep=1;ensureDM("hasebe_trace");currentDM="hasebe_trace";view="messages";save();conversation("hasebe_trace",null,["……主人。","主人，您真的决定要让我从这里离开吗？"])},1600)}
 function cleanupQuestion2(){S.cleanupStep=2;save();conversation("hasebe_trace","……是。",["即使之后再也看不到我。","您也要继续吗？"])}
 
+function triggerWakeSignal(){
+ if(S.wakeSignalSent)return;
+ ensureDM("yagen");
+ [
+  "大将。要是你看得到这条，就先听我说。",
+  "那场战斗确实发生了。我们也确实都受了伤。",
+  "但你和长谷部都没有死。",
+  "你们两个从那之后一直昏睡到现在。",
+  "别再顺着那个虚假的坏结局往下走了。你现在看到的“结束”，不是现实。",
+  "长谷部这边已经开始有反应了。应该很快就会醒。",
+  "大将，你也该从那里出来了。",
+  "大家都在等你。快醒过来。"
+ ].forEach(t=>S.dms.yagen.push({from:"them",text:t}));
+ S.wakeSignalSent=true;
+ S.unread.yagen=1;
+ save();
+}
+
 function finalReplyButtons(){if(dmBusy)return "";return `<div class="replies"><button onclick="beginFinalTruth('想起来了。')">想起来了。</button><button onclick="beginFinalTruth('还没有全部想起来，但我知道你是谁。')">还没有全部想起来，但我知道你是谁。</button></div>`}
-const wrappedDmReplies=dmReplies;dmReplies=function(id){if(dmBusy)return "";if(id==="hasebe_trace"&&S.truthKnown){let arr=S.dms[id]||[],last=arr[arr.length-1]?.text||"";if(last==="都想起来了吗？")return finalReplyButtons();if(last.includes("最后还能再回答我一次吗"))return `<div class="replies"><button onclick="finalFarewell('我不想让你走。')">我不想让你走。</button><button onclick="finalFarewell('谢谢你一直等我。')">谢谢你一直等我。</button></div>`}return wrappedDmReplies(id)};
+const wrappedDmReplies=dmReplies;dmReplies=function(id){
+ if(dmBusy)return "";
+ if(id==="hasebe_trace"&&S.truthKnown){
+  let arr=S.dms[id]||[],last=arr[arr.length-1]?.text||"";
+  if(last==="都想起来了吗？")return finalReplyButtons();
+  if(last.includes("最后还能再回答我一次吗")){
+   let wakeChoice=S.wakeSignalRead?`<button onclick="finalWakeTogether()">我们一起走吧。</button>`:"";
+   return `<div class="replies"><button onclick="finalFarewell('我不想让你走。')">我不想让你走。</button><button onclick="finalFarewell('谢谢你一直等我。')">谢谢你一直等我。</button>${wakeChoice}</div>`;
+  }
+ }
+ return wrappedDmReplies(id)
+};
 function beginFinalTruth(text){
   startFinalBgm();
   runDMSequence("hasebe_trace",[
@@ -784,7 +850,40 @@ function beginFinalTruth(text){
 
   {from:"them",text:"主人。",delay:1750,pause:2400},
   {from:"them",text:"最后还能再回答我一次吗？",delay:1650,pause:1100}
-])}
+],triggerWakeSignal)}
+
+function finalWakeTogether(){
+ S.wakeForum=true;
+ save();
+ runDMSequence("hasebe_trace",[
+  {from:"me",text:"我们一起走吧。",delay:0,pause:1100},
+  {from:"them",text:"……",delay:1500,pause:1600},
+  {from:"them",text:"主人。",delay:1450,pause:1400},
+  {from:"them",text:"您终于意识到了吗？",delay:1350,pause:1900},
+  {from:"them",text:"这里根本不是现实里的论坛。",delay:1050,pause:1350},
+  {from:"them",text:"这是您的意识……也许，还有我的。",delay:1200,pause:1900},
+  {from:"them",text:"那场战斗以后，我们都没有醒来。",delay:1100,pause:1500},
+  {from:"them",text:"这里把我们最害怕发生的事情，拼成了一个像真的一样的结局。",delay:1050,pause:1900},
+  {from:"them",text:"我也一直被它骗着。",delay:1150,pause:1450},
+  {from:"them",text:"直到刚才，我好像也听见药研他们在叫我们。",delay:1200,pause:2100},
+  {from:"them",text:"……太好了。",delay:1600,pause:2200},
+  {from:"them",text:"原来我们都还活着。",delay:1450,pause:2200},
+  {from:"them",text:"既然主人已经能听见外面的声音，就说明出口已经很近了。",delay:1100,pause:1700},
+  {from:"them",text:"不要再留在这里了。",delay:1150,pause:1500},
+  {from:"them",text:"再待下去，大家真的会很着急。",delay:1000,pause:1400},
+  {from:"them",text:"药研醒来以后，大概也不会轻饶我们两个。",delay:1050,pause:1800},
+  {from:"them",text:"所以，走吧。",delay:1450,pause:1900},
+  {from:"them",text:"这一次不是主人送我离开。",delay:1200,pause:1300},
+  {from:"them",text:"也不是我把主人留在这里。",delay:1150,pause:1500},
+  {from:"them",text:"我们一起回去。",delay:1600,pause:2600},
+  {from:"them",text:"主人，抓紧我。",delay:1500,pause:2200},
+  {from:"them",text:"回本丸吧。",delay:1800,pause:3200}
+ ],()=>{
+  fadeOutFinalBgm(4200);
+  fadeToWakeEnding(3400);
+ });
+}
+
 function finalFarewell(text){let steps=[{from:"me",text,delay:0,pause:850}];if(text==="我不想让你走。"){steps.push(
  {from:"them",text:"……我知道。",delay:1400,pause:1700},
  {from:"them",text:"听到主人这样说，我好像又要贪心了。",delay:1100,pause:1500},
@@ -814,8 +913,27 @@ runDMSequence("hasebe_trace",steps,()=>{
   },1800);
 });}
 function fadeToEnding(x,ms=2800){if(document.getElementById("endingCurtain"))return;let e=document.createElement("div");e.id="endingCurtain";e.className="ending-curtain";document.body.appendChild(e);requestAnimationFrame(()=>requestAnimationFrame(()=>e.classList.add("show")));setTimeout(()=>{endGame(x);e.remove()},ms)}
+function fadeToWakeEnding(ms=3400){
+ if(document.getElementById("wakeCurtain"))return;
+ let e=document.createElement("div");
+ e.id="wakeCurtain";
+ e.className="wake-curtain";
+ document.body.appendChild(e);
+ requestAnimationFrame(()=>requestAnimationFrame(()=>e.classList.add("show")));
+ setTimeout(()=>{endGame("he");e.remove()},ms);
+}
 function endGame(x){S.ending=x;save();render()}
-function renderEnding(){let d={peace:["安息","账号归档完成。论坛在线人数终于和列表一致。","最后一次活动停在你按下确认的那一刻。"],ignore:["不再追问","你关闭了程序。","那个账号仍旧偶尔显示在线。没有人再提起这件事。"],hidden:["神隐","页面重新加载时，你的账号不在在线列表里。","右上角的在线人数，仍旧比列表多一个。"],true:["欢迎回来，主人。","论坛里的那个账号终于离线。","“还能再见吗。”"]}[S.ending];document.getElementById("app").innerHTML=`<div class="ending"><div class="ending-inner"><div class="small">本丸论坛</div><h1>${d[0]}</h1><p>${d[1]}</p><p>${d[2]}</p><button class="btn" onclick="resetGame()">重新开始</button></div></div>`}
+function renderEnding(){
+ let d={
+  peace:["安息","账号归档完成。论坛在线人数终于和列表一致。","最后一次活动停在你按下确认的那一刻。"],
+  ignore:["不再追问","你关闭了程序。","那个账号仍旧偶尔显示在线。没有人再提起这件事。"],
+  hidden:["神隐","页面重新加载时，你的账号不在在线列表里。","右上角的在线人数，仍旧比列表多一个。"],
+  true:["欢迎回来，主人。","论坛里的那个账号终于离线。","“还能再见吗。”"],
+  he:["醒来","你睁开眼睛的时候，药研正守在旁边。","不远处，长谷部也刚刚睁开眼。这一次，没有谁被留在那个论坛里。"]
+ }[S.ending];
+ let cls=S.ending==="he"?"ending wake-ending":"ending";
+ document.getElementById("app").innerHTML=`<div class="${cls}"><div class="ending-inner"><div class="small">本丸论坛</div><h1>${d[0]}</h1><p>${d[1]}</p><p>${d[2]}</p><button class="btn" onclick="resetGame()">重新开始</button></div></div>`
+}
 
 function modal(title,body,closable=true){document.getElementById("overlay").innerHTML=`<div class="modal"><div class="modal-card"><h2>${title}</h2>${body}${closable?`<div class="btnrow"><button class="btn" onclick="closeModal()">关闭</button></div>`:""}</div></div>`}
 function closeModal(){document.getElementById("overlay").innerHTML=""}
